@@ -1,0 +1,216 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  --color-surface: #dfe8fb;
+}
+
+/* ------------------------------------------------------------------ glass tokens
+   Light "liquid glass": frosted white panels over a soft, slowly drifting colour field.
+   Change these to retheme the whole app. */
+:root {
+  --glass-fill: rgb(255 255 255 / 0.5);
+  --glass-fill-strong: rgb(255 255 255 / 0.74);
+  --glass-fill-faint: rgb(255 255 255 / 0.32);
+  --glass-edge: rgb(255 255 255 / 0.7);
+  --glass-blur: 22px;
+  /* Bright top edge, soft bottom edge and an inner glow: this is what reads as thick, curved glass. */
+  --glass-shadow:
+    0 10px 34px rgb(30 50 120 / 0.13),
+    inset 0 1px 0 rgb(255 255 255 / 0.95),
+    inset 0 -1px 0 rgb(255 255 255 / 0.25),
+    inset 0 0 20px rgb(255 255 255 / 0.2);
+  /* A diagonal highlight, brighter at the corners like light catching a rounded edge. */
+  --glass-sheen: linear-gradient(135deg, rgb(255 255 255 / 0.5) 0%, rgb(255 255 255 / 0.1) 42%, rgb(255 255 255 / 0.28) 100%);
+}
+
+html {
+  min-height: 100%;
+  background-color: var(--color-surface);
+}
+
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  @apply bg-transparent text-slate-900 antialiased;
+}
+
+/* The colour field the glass refracts. It sits behind everything and drifts very slowly. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: -20%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(38% 42% at 18% 22%, rgb(96 165 250 / 0.55), transparent 70%),
+    radial-gradient(34% 40% at 82% 16%, rgb(192 132 252 / 0.42), transparent 70%),
+    radial-gradient(40% 44% at 74% 82%, rgb(45 212 191 / 0.42), transparent 70%),
+    radial-gradient(32% 36% at 16% 84%, rgb(251 191 36 / 0.28), transparent 70%);
+  animation: field-drift 38s ease-in-out infinite alternate;
+}
+
+@keyframes field-drift {
+  from {
+    transform: translate3d(-2%, -1%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(2%, 2%, 0) scale(1.08);
+  }
+}
+
+/* ------------------------------------------------------------------ glass surfaces
+   `.glass*` are for new markup. The same look is applied to the existing white surfaces
+   (`bg-white`), so cards, tables, tickets and tiles pick it up without being edited. */
+.glass,
+.glass-strong,
+.glass-bar,
+.bg-white:not(.receipt-paper) {
+  background-color: var(--glass-fill);
+  background-image: var(--glass-sheen);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  box-shadow: var(--glass-shadow);
+  transition:
+    background-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.glass-strong {
+  background-color: var(--glass-fill-strong);
+  -webkit-backdrop-filter: blur(34px) saturate(190%);
+  backdrop-filter: blur(34px) saturate(190%);
+}
+
+/* Header and sidebar: a flat pane with only a hairline edge, so it reads as a window in the page. */
+.glass-bar {
+  background-color: rgb(255 255 255 / 0.42);
+  border-color: var(--glass-edge);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.6),
+    0 8px 28px rgb(30 50 120 / 0.08);
+}
+
+/* Quieter glass for fields, tab tracks and inner tiles that sit inside a glass card. */
+.bg-slate-100,
+.bg-slate-50 {
+  background-color: var(--glass-fill-faint);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.bg-slate-100\/70 {
+  background-color: rgb(255 255 255 / 0.26);
+}
+
+/* Hover utilities lose to the unlayered rules above, so they are restated here. */
+.hover\:bg-slate-50:hover,
+.hover\:bg-slate-100:hover,
+.hover\:bg-white:hover {
+  background-color: rgb(255 255 255 / 0.78);
+}
+
+.border-slate-200 {
+  border-color: rgb(120 140 180 / 0.22); /* reads as a hairline on glass, and still divides table rows */
+}
+
+.text-slate-500 {
+  color: #526075; /* a touch darker than slate-500, to stay readable on glass */
+}
+
+/* ------------------------------------------------------------------ liquid gloss for solid buttons
+   A curved highlight across the top half plus a lit rim. Used by Button and BrandMark. */
+.gloss {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.45),
+    inset 0 -1px 0 rgb(0 0 0 / 0.12),
+    0 6px 18px rgb(30 64 175 / 0.22);
+}
+
+.gloss::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 45% 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(to bottom, rgb(255 255 255 / 0.38), rgb(255 255 255 / 0));
+}
+
+/* ------------------------------------------------------------------ fallbacks */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root {
+    --glass-fill: rgb(255 255 255 / 0.88);
+    --glass-fill-strong: rgb(255 255 255 / 0.96);
+    --glass-fill-faint: rgb(255 255 255 / 0.7);
+  }
+  .glass-bar {
+    background-color: rgb(255 255 255 / 0.92);
+  }
+}
+
+/* People who ask for less transparency get solid panels and a still background. */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --glass-fill: #fff;
+    --glass-fill-strong: #fff;
+    --glass-fill-faint: #f1f5f9;
+  }
+  .glass,
+  .glass-strong,
+  .glass-bar,
+  .bg-white:not(.receipt-paper),
+  .bg-slate-100,
+  .bg-slate-50 {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background-image: none;
+  }
+  .glass-bar {
+    background-color: #fff;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before {
+    animation: none;
+  }
+}
+
+/* Receipts and reports are printed on plain paper. */
+@media print {
+  html {
+    background: #fff;
+  }
+  body::before {
+    display: none;
+  }
+  .glass,
+  .glass-strong,
+  .glass-bar,
+  .bg-white,
+  .bg-slate-50,
+  .bg-slate-100 {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background-image: none;
+    box-shadow: none;
+  }
+}
+
+/* Number inputs: hide spinners, the step buttons are noise on a POS. */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'] {
+  -moz-appearance: textfield;
+}

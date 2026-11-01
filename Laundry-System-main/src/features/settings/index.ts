@@ -1,0 +1,5 @@
+export { PricingPage } from './PricingPage'
+export { MachinesPage } from './MachinesPage'
+export { ShopInfoPage } from './ShopInfoPage'
+export { machineStatusMeta } from './MachinesManager'
+export { fetchMachines } from './api'
