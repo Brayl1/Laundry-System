@@ -1,0 +1,29 @@
+/* Print only the receipt paper, sized for an 80mm thermal roll. */
+@media print {
+  @page {
+    size: 80mm auto;
+    margin: 0;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .receipt-paper,
+  .receipt-paper * {
+    visibility: visible;
+  }
+
+  .receipt-paper {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 80mm;
+    max-width: none;
+    border: none;
+    padding: 4mm;
+  }
+
+  .modal-backdrop {
+    display: none;
+  }
+}
