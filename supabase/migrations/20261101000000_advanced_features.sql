@@ -237,7 +237,7 @@ begin
   insert into public.audit_log (actor_id, action, entity, record_id, summary, details)
   values (
     auth.uid(),
-    lower(tg_op),
+    case tg_op when 'INSERT' then 'create' when 'DELETE' then 'delete' else 'update' end,
     tg_table_name,
     v_row ->> 'id',
     v_summary,
