@@ -1,0 +1,1 @@
+export { TouchPosPage } from './TouchPosPage'

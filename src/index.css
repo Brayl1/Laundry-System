@@ -1,0 +1,549 @@
+@import 'tailwindcss';
+
+/* ============================================================================
+   Material Aesthetics: glassmorphism, neumorphism and liquid glass in one lavender,
+   sky and pink colourway. Three layers work together:
+
+     glass    frosted, translucent panels (cards, tables, tickets, the header)
+     soft     neumorphism: raised and pressed surfaces (buttons, fields, tabs, nav)
+     liquid   organic, refractive blobs with a lit rim (the logo, primary buttons, login)
+
+   The header's "surface" switch sets <html data-material="liquid | glass | soft"> and re-tunes
+   the glass tokens below, so the whole app can be shown in any one of the three looks.
+   ============================================================================ */
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  --color-surface: #f4f1fb;
+
+  /* "Blue" is the brand scale used across the app for primary actions, focus rings and links.
+     It is re-mapped here to periwinkle and iris, so existing classes pick up the new colour. */
+  --color-blue-50: #f3f1ff;
+  --color-blue-100: #e8e5ff;
+  --color-blue-200: #d4cfff;
+  --color-blue-300: #b8b0fb;
+  --color-blue-400: #9b8ff7;
+  --color-blue-500: #8577f2;
+  --color-blue-600: #6f60e6;
+  --color-blue-700: #5a4cc9;
+  --color-blue-800: #473ea0;
+  --color-blue-900: #373280;
+  --color-blue-950: #221e52;
+
+  /* Neutrals lean lavender so text, borders and tracks sit in the same family as the surfaces. */
+  --color-slate-50: #f8f7fc;
+  --color-slate-100: #efedf7;
+  --color-slate-200: #e2dff0;
+  --color-slate-300: #cbc7e0;
+  --color-slate-400: #9c98b8;
+  --color-slate-500: #6e6a8c;
+  --color-slate-600: #565273;
+  --color-slate-700: #403d5c;
+  --color-slate-800: #2c2a45;
+  --color-slate-900: #1d1b33;
+  --color-slate-950: #12102a;
+}
+
+/* ------------------------------------------------------------------ material tokens */
+:root,
+html[data-material='liquid'] {
+  --m-fill: rgb(255 255 255 / 0.52);
+  --m-fill-strong: rgb(255 255 255 / 0.78);
+  --m-blur: 26px;
+  --m-saturate: 190%;
+  --m-edge: rgb(255 255 255 / 0.9);
+  /* Thick, curved glass: bright top rim, soft lower rim, inner glow, and a lavender bloom underneath. */
+  --m-shadow:
+    0 24px 50px -18px rgb(125 108 240 / 0.36),
+    0 3px 12px rgb(150 140 215 / 0.12),
+    inset 0 1.5px 0 rgb(255 255 255 / 1),
+    inset 0 -1px 0 rgb(255 255 255 / 0.3),
+    inset 0 0 26px rgb(255 255 255 / 0.32);
+  --m-shadow-sm:
+    0 10px 22px -10px rgb(125 108 240 / 0.3),
+    inset 0 1px 0 rgb(255 255 255 / 1),
+    inset 0 0 14px rgb(255 255 255 / 0.25);
+  /* A diagonal highlight that picks up a little pink at the far corner, like light through a lens. */
+  --m-sheen: linear-gradient(135deg, rgb(255 255 255 / 0.64) 0%, rgb(255 255 255 / 0.12) 42%, rgb(253 226 244 / 0.36) 100%);
+  --m-field-opacity: 1;
+  --m-blob-opacity: 0.55;
+}
+
+html[data-material='glass'] {
+  --m-fill: rgb(255 255 255 / 0.44);
+  --m-fill-strong: rgb(255 255 255 / 0.72);
+  --m-blur: 18px;
+  --m-saturate: 160%;
+  --m-edge: rgb(255 255 255 / 0.75);
+  --m-shadow:
+    0 18px 44px -16px rgb(110 120 240 / 0.3),
+    inset 0 1px 0 rgb(255 255 255 / 0.95),
+    inset 0 0 0 1px rgb(255 255 255 / 0.18);
+  --m-shadow-sm: 0 8px 18px -10px rgb(110 120 240 / 0.28), inset 0 1px 0 rgb(255 255 255 / 0.9);
+  --m-sheen: linear-gradient(135deg, rgb(255 255 255 / 0.5) 0%, rgb(255 255 255 / 0.08) 55%, rgb(255 255 255 / 0.22) 100%);
+  --m-blob-opacity: 0;
+}
+
+html[data-material='soft'] {
+  --m-fill: #efedf8;
+  --m-fill-strong: #f4f2fb;
+  --m-blur: 0px;
+  --m-saturate: 100%;
+  --m-edge: rgb(255 255 255 / 0.6);
+  --m-shadow: 10px 10px 24px rgb(160 154 200 / 0.42), -10px -10px 24px rgb(255 255 255 / 0.95);
+  --m-shadow-sm: 5px 5px 12px rgb(160 154 200 / 0.38), -5px -5px 12px rgb(255 255 255 / 0.95);
+  --m-sheen: none;
+  --m-field-opacity: 0.18;
+  --m-blob-opacity: 0;
+}
+
+/* Pressed (inset) and raised (neumorphic) parts shared by every material. */
+:root {
+  --neu-fill: #efedf8;
+  --neu-light: rgb(255 255 255 / 0.95);
+  --neu-dark: rgb(160 154 200 / 0.4);
+  --inset-fill: rgb(233 230 247 / 0.7);
+}
+
+html {
+  min-height: 100%;
+  background-color: var(--color-surface);
+}
+
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  @apply bg-transparent text-slate-900 antialiased;
+}
+
+/* ------------------------------------------------------------------ the colour field
+   Violet to the left, sky across the top and pink low on the right: the colourway of the reference.
+   It drifts very slowly, and the glass above it refracts it. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: -20%;
+  z-index: -2;
+  pointer-events: none;
+  opacity: var(--m-field-opacity);
+  background:
+    radial-gradient(40% 44% at 16% 24%, rgb(167 139 250 / 0.62), transparent 70%),
+    radial-gradient(36% 40% at 52% 8%, rgb(125 190 252 / 0.5), transparent 70%),
+    radial-gradient(42% 46% at 84% 78%, rgb(249 168 212 / 0.62), transparent 70%),
+    radial-gradient(34% 38% at 20% 88%, rgb(147 197 253 / 0.38), transparent 70%);
+  animation: field-drift 38s ease-in-out infinite alternate;
+}
+
+/* One large liquid-glass blob drifting at the edge of the screen. It only shows in the liquid look. */
+body::after {
+  content: '';
+  position: fixed;
+  z-index: -1;
+  pointer-events: none;
+  right: -12vmax;
+  bottom: -14vmax;
+  width: 46vmax;
+  height: 46vmax;
+  border-radius: 42% 58% 55% 45% / 48% 42% 58% 52%;
+  opacity: var(--m-blob-opacity);
+  filter: blur(10px);
+  background:
+    radial-gradient(60% 50% at 30% 28%, rgb(255 255 255 / 0.85), transparent 60%),
+    conic-gradient(from 200deg, rgb(167 139 250 / 0.55), rgb(125 211 252 / 0.5), rgb(249 168 212 / 0.6), rgb(253 230 138 / 0.22), rgb(167 139 250 / 0.55));
+  animation: blob-morph 24s ease-in-out infinite alternate;
+}
+
+@keyframes field-drift {
+  from {
+    transform: translate3d(-2%, -1%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(2%, 2%, 0) scale(1.08);
+  }
+}
+
+@keyframes blob-morph {
+  0% {
+    border-radius: 42% 58% 55% 45% / 48% 42% 58% 52%;
+    transform: rotate(0deg) translate3d(0, 0, 0);
+  }
+  50% {
+    border-radius: 58% 42% 45% 55% / 55% 58% 42% 45%;
+    transform: rotate(12deg) translate3d(-2vmax, -1vmax, 0);
+  }
+  100% {
+    border-radius: 47% 53% 60% 40% / 42% 50% 50% 58%;
+    transform: rotate(-8deg) translate3d(1vmax, -3vmax, 0);
+  }
+}
+
+@keyframes liquid-morph {
+  0% {
+    border-radius: 42% 58% 55% 45% / 48% 42% 58% 52%;
+  }
+  33% {
+    border-radius: 58% 42% 46% 54% / 52% 56% 44% 48%;
+  }
+  66% {
+    border-radius: 48% 52% 60% 40% / 44% 48% 52% 56%;
+  }
+  100% {
+    border-radius: 40% 60% 52% 48% / 56% 44% 56% 44%;
+  }
+}
+
+/* ------------------------------------------------------------------ glass surfaces
+   `.glass*` are for new markup. The same look is applied to every existing white surface
+   (`bg-white`), so cards, tables, tickets and tiles pick it up without being edited. */
+.glass,
+.glass-strong,
+.glass-bar,
+.bg-white:not(.receipt-paper) {
+  background-color: var(--m-fill);
+  background-image: var(--m-sheen);
+  -webkit-backdrop-filter: blur(var(--m-blur)) saturate(var(--m-saturate));
+  backdrop-filter: blur(var(--m-blur)) saturate(var(--m-saturate));
+  box-shadow: var(--m-shadow);
+  transition:
+    background-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+/* A panel inside a panel gets a lighter lift, so the stack does not turn heavy. */
+.bg-white:not(.receipt-paper) .bg-white:not(.receipt-paper) {
+  box-shadow: var(--m-shadow-sm);
+}
+
+/* The lit white rim of a card. Coloured borders (selected, error) are left alone. */
+.bg-white.border-slate-200:not(.receipt-paper) {
+  border-color: var(--m-edge);
+}
+
+.glass-strong {
+  background-color: var(--m-fill-strong);
+  -webkit-backdrop-filter: blur(calc(var(--m-blur) + 10px)) saturate(190%);
+  backdrop-filter: blur(calc(var(--m-blur) + 10px)) saturate(190%);
+}
+
+/* Header and sidebar: a thin pane that reads as a window in the page. */
+.glass-bar {
+  background-color: rgb(255 255 255 / 0.4);
+  border-color: var(--m-edge);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.7),
+    0 10px 30px -12px rgb(125 108 240 / 0.22);
+}
+
+html[data-material='soft'] .glass-bar {
+  background-color: var(--m-fill);
+  box-shadow: 0 6px 16px -8px rgb(160 154 200 / 0.5);
+}
+
+/* ------------------------------------------------------------------ neumorphism
+   Fields, tab tracks and inner wells are pressed into the surface. */
+.bg-slate-100,
+.bg-slate-50,
+.neu-inset {
+  background-color: var(--inset-fill);
+  box-shadow:
+    inset 4px 4px 9px rgb(150 144 195 / 0.3),
+    inset -4px -4px 9px rgb(255 255 255 / 0.85);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.bg-slate-100\/70 {
+  background-color: rgb(255 255 255 / 0.26);
+  box-shadow: none;
+}
+
+/* Raised parts: buttons, nav pills, selectable cards. They press in when clicked. */
+.neu,
+.neu-btn,
+.neu-sm {
+  background-color: var(--neu-fill);
+  background-image: none;
+  border: 1px solid rgb(255 255 255 / 0.6);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.neu,
+.neu-btn {
+  box-shadow:
+    7px 7px 16px var(--neu-dark),
+    -7px -7px 16px var(--neu-light);
+}
+
+.neu-sm {
+  box-shadow:
+    4px 4px 9px var(--neu-dark),
+    -4px -4px 9px var(--neu-light);
+}
+
+.neu-btn {
+  transition:
+    box-shadow 0.18s ease,
+    color 0.18s ease;
+}
+
+.neu-btn:hover:not(:disabled) {
+  box-shadow:
+    9px 9px 20px var(--neu-dark),
+    -9px -9px 20px var(--neu-light);
+}
+
+.neu-btn:active:not(:disabled),
+.neu-btn[aria-pressed='true'],
+.neu-btn[aria-checked='true'] {
+  box-shadow:
+    inset 4px 4px 9px rgb(150 144 195 / 0.34),
+    inset -4px -4px 9px rgb(255 255 255 / 0.9);
+}
+
+/* The round dial behind each washing machine door. */
+.neu-dial {
+  background-color: var(--neu-fill);
+  box-shadow:
+    5px 5px 12px var(--neu-dark),
+    -5px -5px 12px var(--neu-light);
+}
+
+/* Hover utilities lose to the unlayered rules above, so they are restated here. */
+.hover\:bg-slate-50:hover,
+.hover\:bg-slate-100:hover,
+.hover\:bg-white:hover {
+  background-color: rgb(255 255 255 / 0.78);
+}
+
+.focus\:bg-white:focus {
+  background-color: rgb(255 255 255 / 0.92);
+}
+
+.border-slate-200 {
+  border-color: rgb(150 140 205 / 0.24); /* a hairline on glass that still divides table rows */
+}
+
+.text-slate-500 {
+  color: #5f5b80; /* a touch darker than the palette's 500, to stay readable on glass */
+}
+
+/* ------------------------------------------------------------------ liquid glass
+   An organic body, a lit iridescent rim and a specular highlight. */
+.liquid {
+  position: relative;
+  isolation: isolate;
+  border-radius: 42% 58% 55% 45% / 48% 42% 58% 52%;
+  background:
+    radial-gradient(120% 120% at 24% 14%, rgb(255 255 255 / 0.7), transparent 42%),
+    linear-gradient(135deg, rgb(155 143 247 / 0.82), rgb(129 180 250 / 0.68) 55%, rgb(249 168 212 / 0.8));
+  -webkit-backdrop-filter: blur(10px) saturate(170%);
+  backdrop-filter: blur(10px) saturate(170%);
+  box-shadow:
+    inset 0 2px 3px rgb(255 255 255 / 0.9),
+    inset 0 -12px 22px rgb(255 255 255 / 0.22),
+    0 16px 32px -10px rgb(125 108 240 / 0.5);
+}
+
+/* The rim: a conic gradient clipped to a 1.5px ring. */
+.liquid::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  padding: 1.5px;
+  pointer-events: none;
+  background: conic-gradient(from 200deg, #c4b5fd, #7dd3fc, #fbcfe8, #fde68a, #c4b5fd);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+  opacity: 0.95;
+}
+
+/* The specular highlight, upper left. */
+.liquid::after {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  top: 9%;
+  left: 14%;
+  width: 36%;
+  height: 20%;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgb(255 255 255 / 0.9), transparent);
+  filter: blur(2px);
+  transform: rotate(-26deg);
+}
+
+.liquid-ink {
+  background:
+    radial-gradient(120% 120% at 24% 14%, rgb(255 255 255 / 0.5), transparent 42%),
+    linear-gradient(135deg, #3b3677, #6f60e6 70%, #8b82f0);
+}
+
+.liquid-morph {
+  animation: liquid-morph 14s ease-in-out infinite alternate;
+}
+
+/* Primary buttons: a liquid pill that glows pink in the lower corner. Used by Button and by any
+   link styled as a solid blue button. */
+.liquid-btn,
+.gloss[class*='bg-blue-600'] {
+  background:
+    radial-gradient(90% 150% at 100% 130%, rgb(249 168 212 / 0.62), transparent 62%),
+    radial-gradient(70% 90% at 0% 0%, rgb(255 255 255 / 0.28), transparent 60%),
+    linear-gradient(125deg, #7059ee 0%, #6a7ff2 100%);
+  box-shadow:
+    inset 0 1.5px 0 rgb(255 255 255 / 0.6),
+    inset 0 -2px 6px rgb(60 40 160 / 0.25),
+    0 10px 22px -6px rgb(112 89 238 / 0.55);
+}
+
+.liquid-btn {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  transition: filter 0.2s ease;
+}
+
+.liquid-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 48% 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(to bottom, rgb(255 255 255 / 0.4), rgb(255 255 255 / 0));
+}
+
+.liquid-btn:hover:not(:disabled),
+.gloss[class*='bg-blue-600']:hover {
+  filter: brightness(1.07) saturate(1.05);
+}
+
+.liquid-btn:disabled {
+  opacity: 0.55;
+}
+
+/* A curved highlight across the top half of the other solid buttons. */
+.gloss {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.45),
+    inset 0 -1px 0 rgb(0 0 0 / 0.12),
+    0 8px 20px -6px rgb(60 50 140 / 0.3);
+}
+
+.gloss::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 45% 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(to bottom, rgb(255 255 255 / 0.38), rgb(255 255 255 / 0));
+}
+
+.gloss[class*='bg-blue-600'] {
+  box-shadow:
+    inset 0 1.5px 0 rgb(255 255 255 / 0.6),
+    inset 0 -2px 6px rgb(60 40 160 / 0.25),
+    0 10px 22px -6px rgb(112 89 238 / 0.55);
+}
+
+/* Keyboard hint chips (Ctrl K). */
+kbd {
+  font-family: var(--font-sans);
+}
+
+/* ------------------------------------------------------------------ fallbacks */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root,
+  html[data-material] {
+    --m-fill: rgb(255 255 255 / 0.9);
+    --m-fill-strong: rgb(255 255 255 / 0.96);
+  }
+  .glass-bar {
+    background-color: rgb(255 255 255 / 0.92);
+  }
+}
+
+/* People who ask for less transparency get solid panels and a still background. */
+@media (prefers-reduced-transparency: reduce) {
+  :root,
+  html[data-material] {
+    --m-fill: #fff;
+    --m-fill-strong: #fff;
+    --m-sheen: none;
+    --inset-fill: #f1effa;
+  }
+  .glass,
+  .glass-strong,
+  .glass-bar,
+  .liquid,
+  .bg-white:not(.receipt-paper) {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .glass-bar {
+    background-color: #fff;
+  }
+  body::after {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before,
+  body::after,
+  .liquid-morph {
+    animation: none;
+  }
+}
+
+/* Receipts and reports are printed on plain paper. */
+@media print {
+  html {
+    background: #fff;
+  }
+  body::before,
+  body::after {
+    display: none;
+  }
+  .glass,
+  .glass-strong,
+  .glass-bar,
+  .bg-white,
+  .bg-slate-50,
+  .bg-slate-100,
+  .neu,
+  .neu-btn,
+  .neu-sm {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background-image: none;
+    box-shadow: none;
+  }
+}
+
+/* Number inputs: hide spinners, the step buttons are noise on a POS. */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'] {
+  -moz-appearance: textfield;
+}
