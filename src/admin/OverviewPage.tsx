@@ -3,6 +3,7 @@ import { ClipboardList, DollarSign, ShoppingBag, WashingMachine } from 'lucide-r
 import type { OrderStatus } from '@/lib/types'
 import { customerTypeLabel, formatDateTime, orderStatusLabel, peso, serviceTypeLabel } from '@/lib/format'
 import { Badge, Card, ErrorNote, PageHeader, PageLoader, type BadgeTone } from '@/shared/ui'
+import { InventoryAlerts } from '@/features/inventory'
 import { DailyChart, StatTile } from '@/features/reports'
 import { machineStatusMeta } from '@/features/settings'
 import { useOverview } from './useOverview'
@@ -31,6 +32,7 @@ export function OverviewPage() {
         !error && <PageLoader />
       ) : (
         <div className="space-y-5">
+          <InventoryAlerts />
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
             <StatTile index={0} label="Today's Income" value={overview.today.income} format={peso} icon={<DollarSign />} tone="bg-green-100 text-green-700" />
             <StatTile index={1} label="Today's Orders" value={overview.today.orders} format={integer} icon={<ShoppingBag />} tone="bg-blue-100 text-blue-700" />

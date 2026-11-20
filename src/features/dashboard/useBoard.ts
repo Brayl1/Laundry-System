@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { OrderStatus } from '@/lib/types'
+import { saveShelfLocation } from '@/features/shelf'
 import { fetchBoard, startOrder, subscribeToBoard, updateOrderStatus, type Board } from './api'
 
 export function useBoard() {
@@ -20,9 +21,9 @@ export function useBoard() {
     return subscribeToBoard(refresh)
   }, [refresh])
 
-  /** Moves an order to its next stage. Claimed orders leave the board. */
+  /** Moves an order to its next stage. Claimed orders leave the board. Resolves to false if the update failed. */
   const advance = useCallback(
-    async (id: string, status: OrderStatus) => {
+    async (id: string, status: OrderStatus): Promise<boolean> => {
       setBoard((prev) =>
         prev && {
           ...prev,
@@ -31,10 +32,21 @@ export function useBoard() {
       )
       try {
         await updateOrderStatus(id, status)
+        return true
       } catch (e) {
         setError(e instanceof Error ? e.message : 'Could not update the order')
         refresh() // roll back the optimistic move
+        return false
       }
+    },
+    [refresh],
+  )
+
+  /** Stores where an order's bag is kept. Throws so the dialog can show the reason. */
+  const setShelf = useCallback(
+    async (orderId: string, binId: string | null, note: string | null) => {
+      await saveShelfLocation(orderId, binId, note)
+      refresh()
     },
     [refresh],
   )
@@ -48,5 +60,5 @@ export function useBoard() {
     [refresh],
   )
 
-  return { board, error, advance, start }
+  return { board, error, advance, start, setShelf }
 }

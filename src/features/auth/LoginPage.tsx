@@ -55,13 +55,7 @@ export function LoginPage({ audience = 'staff' }: { audience?: Audience }) {
   }
 
   return (
-    <main
-      className={
-        isAdminLogin
-          ? 'flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-100 via-white to-slate-200 px-4'
-          : 'flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-white to-slate-100 px-4'
-      }
-    >
+    <main className="flex min-h-screen items-center justify-center px-4">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}

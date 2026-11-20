@@ -1,1 +1,0 @@
-export { ReceiptModal } from './ReceiptModal'

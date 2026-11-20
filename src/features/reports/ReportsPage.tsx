@@ -1,16 +1,20 @@
 import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'motion/react'
-import { DollarSign, Download, ShoppingBag, TrendingUp, Users } from 'lucide-react'
+import { Banknote, DollarSign, Download, QrCode, ShoppingBag, TrendingUp, Users, Wallet } from 'lucide-react'
 import type { OrderDetail } from '@/lib/types'
 import { peso } from '@/lib/format'
 import { cn } from '@/shared/cn'
 import { Button, Card, ErrorNote, PageHeader, PageLoader } from '@/shared/ui'
+// Deep imports on purpose: the ledger page imports StatTile from here, so going through its index would be a cycle.
+import { fetchLedger } from '@/features/ledger/api'
+import { totalOutstanding } from '@/features/ledger/calc'
 import { fetchOrdersSince } from './api'
 import { exportOrdersCsv } from './exportCsv'
 import { DailyChart } from './DailyChart'
+import { HeatmapCard } from './HeatmapCard'
 import { PaymentPie } from './PaymentPie'
 import { StatTile } from './StatTile'
-import { RANGES, rangeStart, summarize, type RangeKey } from './stats'
+import { RANGES, buildHeatmap, paymentTotals, rangeStart, summarize, type RangeKey } from './stats'
 
 const integer = (n: number) => Math.round(n).toString()
 const kilos = (n: number) => n.toFixed(1)
@@ -19,6 +23,8 @@ export function ReportsPage() {
   const [range, setRange] = useState<RangeKey>('30d')
   const [orders, setOrders] = useState<OrderDetail[] | null>(null)
   const [error, setError] = useState<string | null>(null)
+  /** Everything customers owe right now, or null if the ledger could not be read. */
+  const [outstanding, setOutstanding] = useState<number | null>(null)
 
   const start = useMemo(() => rangeStart(range), [range])
 
@@ -33,6 +39,14 @@ export function ReportsPage() {
     }
   }, [start])
 
+  useEffect(() => {
+    fetchLedger()
+      .then((l) => setOutstanding(totalOutstanding(l.ledgers)))
+      .catch(() => setOutstanding(null))
+  }, [])
+
+  const heatmap = useMemo(() => (orders ? buildHeatmap(orders) : null), [orders])
+  const collected = useMemo(() => (orders ? paymentTotals(orders) : null), [orders])
   const summary = useMemo(() => (orders ? summarize(orders, start) : null), [orders, start])
 
   return (
@@ -84,6 +98,16 @@ export function ReportsPage() {
             <StatTile index={3} label="Avg Order Value" value={summary.avgOrderValue} format={peso} icon={<TrendingUp />} tone="bg-orange-100 text-orange-700" />
           </div>
 
+          {collected && (
+            <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+              <StatTile index={4} label="Cash collected" value={collected.cash} format={peso} icon={<Banknote />} tone="bg-green-100 text-green-700" />
+              <StatTile index={5} label="GCash / QR collected" value={collected.qr} format={peso} icon={<QrCode />} tone="bg-blue-100 text-blue-700" />
+              {outstanding !== null && (
+                <StatTile index={6} label="Outstanding unpaid" value={outstanding} format={peso} caption="owed by customers, all time" icon={<Wallet />} tone="bg-red-100 text-red-700" />
+              )}
+            </div>
+          )}
+
           <div className="grid gap-5 lg:grid-cols-3">
             <Card title="Daily Performance" className="lg:col-span-2">
               <DailyChart data={summary.daily} />
@@ -92,6 +116,12 @@ export function ReportsPage() {
               <PaymentPie counts={summary.payments} />
             </Card>
           </div>
+
+          {heatmap && (
+            <Card title="Busiest days and hours">
+              <HeatmapCard heatmap={heatmap} />
+            </Card>
+          )}
 
           <Card title="Summary Breakdown">
             <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">

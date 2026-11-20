@@ -1,7 +1,11 @@
 import type { RouteObject } from 'react-router-dom'
+import { AuditPage } from '@/features/audit'
 import { CustomersPage } from '@/features/customers'
+import { InventoryPage } from '@/features/inventory'
+import { LedgerPage } from '@/features/ledger'
 import { OngoingOrdersPage } from '@/features/orders'
 import { ReportsPage } from '@/features/reports'
+import { ShelvesPage } from '@/features/shelf'
 import { MachinesPage, PricingPage, ShopInfoPage } from '@/features/settings'
 import { StaffPage } from '@/features/staff'
 import { OverviewPage } from './OverviewPage'
@@ -11,9 +15,13 @@ export const adminRoutes: RouteObject[] = [
   { index: true, element: <OverviewPage /> },
   { path: 'orders', element: <OngoingOrdersPage title="Orders" subtitle="Every order, any status. Updates live." /> },
   { path: 'customers', element: <CustomersPage /> },
+  { path: 'ledger', element: <LedgerPage /> },
   { path: 'reports', element: <ReportsPage /> },
   { path: 'staff', element: <StaffPage /> },
   { path: 'pricing', element: <PricingPage /> },
   { path: 'machines', element: <MachinesPage /> },
+  { path: 'inventory', element: <InventoryPage /> },
+  { path: 'shelves', element: <ShelvesPage /> },
   { path: 'shop', element: <ShopInfoPage /> },
+  { path: 'audit', element: <AuditPage /> },
 ]

@@ -3,15 +3,18 @@ import { Link } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { ArrowLeft, Loader2 } from 'lucide-react'
 import { cn } from '../cn'
+import { MachinePorthole } from './MachinePorthole'
 
 export function Spinner({ className }: { className?: string }) {
   return <Loader2 className={cn('size-5 animate-spin text-slate-400', className)} aria-label="Loading" />
 }
 
+/** The shop's own washing machine, running, while a page loads. */
 export function PageLoader() {
   return (
-    <div className="flex min-h-60 items-center justify-center">
-      <Spinner className="size-6" />
+    <div role="status" className="flex min-h-60 flex-col items-center justify-center gap-3">
+      <MachinePorthole status="in_use" label="Loading" className="size-20" />
+      <p className="text-xs text-slate-500">Loading…</p>
     </div>
   )
 }

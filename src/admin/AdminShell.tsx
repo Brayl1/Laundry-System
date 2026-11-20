@@ -4,7 +4,9 @@ import { AnimatePresence, motion } from 'motion/react'
 import { Menu, X } from 'lucide-react'
 import { useAuth } from '@/features/auth'
 import { BrandMark } from '@/shared/layout/BrandMark'
+import { CommandPalette, type PaletteCommand } from '@/shared/ui'
 import { AdminSidebar } from './AdminSidebar'
+import { navSections } from './nav'
 
 /** Admin interface: fixed sidebar on desktop, slide-over drawer on mobile. Admin-only access is enforced by the route guard. */
 export function AdminShell() {
@@ -34,8 +36,15 @@ export function AdminShell() {
 
   if (!profile) return null
 
+  const commands: PaletteCommand[] = [
+    ...navSections.flatMap((section) => section.items.map((item) => ({ id: item.to, label: item.label, group: section.label, icon: item.icon, to: item.to }))),
+    { id: 'open-pos', label: 'Open POS', group: 'Counter', to: '/' },
+    { id: 'logout', label: 'Log out', group: 'Account', run: signOut },
+  ]
+
   return (
     <div className="min-h-screen lg:pl-64">
+      <CommandPalette commands={commands} />
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 lg:block print:hidden">
         <AdminSidebar profile={profile} onLogout={signOut} />
       </aside>

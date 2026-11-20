@@ -16,6 +16,18 @@ body {
   @apply bg-surface text-slate-900 antialiased;
 }
 
+kbd {
+  font-family: var(--font-sans);
+}
+
+/* Receipts and reports are printed on plain paper. */
+@media print {
+  html,
+  body {
+    background: #fff;
+  }
+}
+
 /* Number inputs: hide spinners, the step buttons are noise on a POS. */
 input[type='number']::-webkit-inner-spin-button,
 input[type='number']::-webkit-outer-spin-button {

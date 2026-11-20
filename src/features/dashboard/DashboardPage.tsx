@@ -1,12 +1,15 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'motion/react'
-import { ArrowRight, Plus } from 'lucide-react'
+import { ArrowRight, LayoutGrid, Plus } from 'lucide-react'
 import { useAuth } from '@/features/auth'
-import type { OrderDetail } from '@/lib/types'
+import { notifyReady } from '@/features/notifications'
+import { ShelfMap, ShelfModal } from '@/features/shelf'
+import type { OrderDetail, OrderStatus } from '@/lib/types'
 import { AnimatedNumber, Button, Card, ErrorNote, MachinePorthole, PageLoader } from '@/shared/ui'
 import { useClock } from '@/shared/hooks/useClock'
 import { cn } from '@/shared/cn'
+import { resolveMove } from './kanban'
 import { QueueBoard } from './QueueBoard'
 import { StartWashingModal } from './StartWashingModal'
 import { useBoard } from './useBoard'
@@ -22,10 +25,28 @@ function greeting(hour: number): string {
 
 export function DashboardPage() {
   const { profile } = useAuth()
-  const { board, error, advance, start } = useBoard()
+  const { board, error, advance, start, setShelf } = useBoard()
   const [starting, setStarting] = useState<OrderDetail | null>(null)
+  const [shelving, setShelving] = useState<OrderDetail | null>(null)
+  const [moveNote, setMoveNote] = useState<string | null>(null)
   const clock = useClock(30_000)
   const now = clock.getTime()
+
+  /** Advances an order, and texts the customer once it is ready for pickup. */
+  async function handleAdvance(id: string, status: OrderStatus) {
+    setMoveNote(null)
+    const order = board?.active.find((o) => o.id === id)
+    const ok = await advance(id, status)
+    if (ok && status === 'done' && order) void notifyReady(order)
+  }
+
+  /** A card was dropped on a column. Only one step forward is allowed; starting needs the washer dialog. */
+  function handleMove(order: OrderDetail, to: OrderStatus) {
+    const move = resolveMove(order.status, to)
+    setMoveNote(move.kind === 'reject' ? move.reason : null)
+    if (move.kind === 'start') setStarting(order)
+    else if (move.kind === 'advance') void handleAdvance(order.id, move.to)
+  }
 
   const firstName = profile?.display_name.split(' ')[0] ?? ''
   const idle = board?.machines.filter((m) => m.status === 'idle').length ?? 0
@@ -42,14 +63,22 @@ export function DashboardPage() {
             {clock.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </p>
         </div>
-        <MotionLink
-          to="/transaction"
-          whileHover={{ y: -2 }}
-          whileTap={{ scale: 0.97 }}
-          className="inline-flex h-14 items-center gap-3 rounded-xl bg-blue-600 px-7 text-base font-medium text-white shadow-md shadow-blue-600/25 hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-        >
-          <Plus className="size-5" aria-hidden /> New transaction
-        </MotionLink>
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            to="/pos"
+            className="inline-flex h-14 items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 text-base font-medium text-slate-800 hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+          >
+            <LayoutGrid className="size-5" aria-hidden /> Touch POS
+          </Link>
+          <MotionLink
+            to="/transaction"
+            whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.97 }}
+            className="inline-flex h-14 items-center gap-3 rounded-xl bg-blue-600 px-7 text-base font-medium text-white shadow-md shadow-blue-600/25 hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+          >
+            <Plus className="size-5" aria-hidden /> New transaction
+          </MotionLink>
+        </div>
       </section>
 
       <ErrorNote message={error} />
@@ -123,18 +152,31 @@ export function DashboardPage() {
                 All orders <ArrowRight className="size-4" aria-hidden />
               </Link>
             </div>
+            {moveNote && (
+              <p role="status" className="mb-3 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">
+                {moveNote}
+              </p>
+            )}
             {board.active.length === 0 ? (
               <Card className="py-10 text-center">
                 <p className="font-medium text-slate-900">The queue is clear</p>
                 <p className="mt-1 text-sm text-slate-500">New orders show up here as soon as they are created.</p>
               </Card>
             ) : (
-              <QueueBoard orders={board.active} now={now} onAdvance={advance} onStart={setStarting} />
+              <QueueBoard orders={board.active} now={now} onAdvance={handleAdvance} onStart={setStarting} onShelf={setShelving} onMove={handleMove} />
             )}
+          </section>
+
+          <section aria-labelledby="shelf-heading">
+            <h2 id="shelf-heading" className="mb-4 text-lg font-medium text-slate-900">
+              Shelf map
+            </h2>
+            <ShelfMap shelves={board.shelves} orders={board.active} onSelect={setShelving} />
           </section>
         </>
       )}
 
+      <ShelfModal key={shelving?.id ?? 'none'} order={shelving} shelves={board?.shelves ?? []} orders={board?.active ?? []} onClose={() => setShelving(null)} onSave={setShelf} />
       <StartWashingModal order={starting} machines={board?.machines ?? []} onClose={() => setStarting(null)} onConfirm={start} />
     </div>
   )

@@ -20,6 +20,9 @@ export function mapOrderDetail(row: OrderDetailRow): OrderDetail {
     paymentMethod: row.payment_method!,
     status: row.status!,
     machineLabel: row.machine_label,
+    shelfLocation: row.shelf_location,
+    shelfBinId: row.shelf_bin_id,
+    shelfNote: row.shelf_note,
     cashierName: row.cashier_name ?? 'Unknown',
     addons: ((row.addons ?? []) as unknown as OrderLine[]).map((a) => ({ name: a.name, price: Number(a.price) })),
   }

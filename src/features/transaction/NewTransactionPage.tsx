@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion, type Variants } from 'motion/react'
 import { ErrorNote, PageHeader, PageLoader, Stepper } from '@/shared/ui'
+import { notifyDropoff } from '@/features/notifications'
 import { ReceiptModal } from '@/features/receipt'
 import { createOrder, fetchPricing, type PricingData } from './api'
 import { computeQuote, parseWeight } from './pricing'
@@ -56,6 +57,7 @@ export function NewTransactionPage() {
         machineId: state.machineId,
       })
       dispatch({ type: 'complete', order })
+      void notifyDropoff(order) // text the customer a tracking link; never blocks the sale
     } catch (e) {
       setSubmitError(e instanceof Error ? e.message : 'Payment failed')
       loadPricing() // washer availability may have changed under us

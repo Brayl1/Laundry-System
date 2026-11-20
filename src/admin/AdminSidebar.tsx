@@ -3,6 +3,7 @@ import { LogOut, ShoppingCart } from 'lucide-react'
 import type { Profile } from '@/lib/types'
 import { cn } from '@/shared/cn'
 import { BrandMark } from '@/shared/layout/BrandMark'
+import { PaletteButton } from '@/shared/ui'
 import { navSections } from './nav'
 
 interface AdminSidebarProps {
@@ -20,6 +21,10 @@ export function AdminSidebar({ profile, onLogout }: AdminSidebarProps) {
           <p className="text-xs text-slate-400">Admin Panel</p>
         </div>
       </Link>
+
+      <div className="px-4 pb-2">
+        <PaletteButton tone="dark" className="w-full justify-between" />
+      </div>
 
       <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-2" aria-label="Admin">
         {navSections.map((section) => (

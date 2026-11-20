@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { LogOut, ShieldCheck } from 'lucide-react'
 import { useClock } from '../hooks/useClock'
-import { Button } from '../ui'
+import { Button, PaletteButton } from '../ui'
 import { BrandMark } from './BrandMark'
 
 interface HeaderProps {
@@ -23,7 +23,8 @@ export function Header({ userName, isAdmin, onLogout }: HeaderProps) {
             <p className="text-xs text-slate-500">Welcome, {userName}</p>
           </div>
         </Link>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <PaletteButton className="hidden md:inline-flex" />
           <div className="hidden text-right leading-tight sm:block">
             <p className="text-sm tabular-nums text-slate-900">{now.toLocaleTimeString('en-US')}</p>
             <p className="text-xs text-slate-500">

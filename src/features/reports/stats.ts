@@ -87,3 +87,33 @@ export function summarize(orders: OrderDetail[], start: Date | null, now = new D
   summary.daily = [...byDay.values()].sort((a, b) => a.date.localeCompare(b.date))
   return summary
 }
+
+/** Orders per weekday (Monday first) and hour of day, in local time. */
+export interface Heatmap {
+  /** cells[day][hour], day 0 = Monday. */
+  cells: number[][]
+  max: number
+  peak: { day: number; hour: number; count: number } | null
+}
+
+export const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+
+export function buildHeatmap(orders: OrderDetail[]): Heatmap {
+  const cells = Array.from({ length: 7 }, () => Array<number>(24).fill(0))
+  let peak: Heatmap['peak'] = null
+  for (const o of orders) {
+    const d = new Date(o.createdAt)
+    const day = (d.getDay() + 6) % 7
+    const hour = d.getHours()
+    cells[day][hour] += 1
+    if (!peak || cells[day][hour] > peak.count) peak = { day, hour, count: cells[day][hour] }
+  }
+  return { cells, max: peak?.count ?? 0, peak }
+}
+
+/** Money collected per payment method. "qr" is the GCash / QR code option at the till. */
+export function paymentTotals(orders: OrderDetail[]): Record<PaymentMethod, number> {
+  const totals: Record<PaymentMethod, number> = { cash: 0, qr: 0 }
+  for (const o of orders) totals[o.paymentMethod] += o.total
+  return { cash: Math.round(totals.cash * 100) / 100, qr: Math.round(totals.qr * 100) / 100 }
+}

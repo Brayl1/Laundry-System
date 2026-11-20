@@ -36,6 +36,11 @@ insert into public.addons (name, price, sort) values
 insert into public.machines (label) values
   ('Washer 1'), ('Washer 2'), ('Washer 3'), ('Washer 4');
 
+-- Demo supplies: detergent and softener are deducted per kilo when a wash starts.
+insert into public.supplies (name, unit, stock, low_threshold, usage_per_kg) values
+  ('Detergent',       'ml', 20000, 3000, 15),
+  ('Fabric softener', 'ml', 10000, 2000, 8);
+
 -- A plain cashier, so the cashier (non-admin) side can be tried. Login: cashier2 / pass123
 insert into auth.users (
   instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,

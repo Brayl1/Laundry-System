@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
-import { BarChart3, ClipboardList, LayoutDashboard, Store, Tag, UserCog, Users, WashingMachine } from 'lucide-react'
+import { Archive, BarChart3, Boxes, ClipboardList, LayoutDashboard, ScrollText, Store, Tag, UserCog, Users, Wallet, WashingMachine } from 'lucide-react'
 
 export interface NavItem {
   to: string
@@ -21,6 +21,7 @@ export const navSections: NavSection[] = [
       { to: '/admin', label: 'Overview', icon: LayoutDashboard, end: true },
       { to: '/admin/orders', label: 'Orders', icon: ClipboardList },
       { to: '/admin/customers', label: 'Customers', icon: Users },
+      { to: '/admin/ledger', label: 'Credit Ledger', icon: Wallet },
       { to: '/admin/reports', label: 'Reports', icon: BarChart3 },
     ],
   },
@@ -30,7 +31,13 @@ export const navSections: NavSection[] = [
       { to: '/admin/staff', label: 'Staff', icon: UserCog },
       { to: '/admin/pricing', label: 'Pricing & Add-ons', icon: Tag },
       { to: '/admin/machines', label: 'Machines', icon: WashingMachine },
+      { to: '/admin/inventory', label: 'Inventory', icon: Boxes },
+      { to: '/admin/shelves', label: 'Shelves', icon: Archive },
       { to: '/admin/shop', label: 'Shop Info', icon: Store },
     ],
+  },
+  {
+    label: 'Security',
+    items: [{ to: '/admin/audit', label: 'Audit Log', icon: ScrollText }],
   },
 ]

@@ -1,1 +1,0 @@
-export { NewTransactionPage } from './NewTransactionPage'

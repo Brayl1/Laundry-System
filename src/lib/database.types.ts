@@ -53,14 +53,14 @@ export type Database = {
                   ]
                 },"machines": {
                   Row: {
-                    "created_at": string,"id": string,"label": string,"status": Database["public"]['Enums']["machine_status"]
+                    "created_at": string,"id": string,"label": string,"loads_since_service": number,"service_every": number,"status": Database["public"]['Enums']["machine_status"]
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"id"?: string,"label": string,"status"?: Database["public"]['Enums']["machine_status"]
+                    "created_at"?: string,"id"?: string,"label": string,"loads_since_service"?: number,"service_every"?: number,"status"?: Database["public"]['Enums']["machine_status"]
                   }
                   Update: {
-                    "created_at"?: string,"id"?: string,"label"?: string,"status"?: Database["public"]['Enums']["machine_status"]
+                    "created_at"?: string,"id"?: string,"label"?: string,"loads_since_service"?: number,"service_every"?: number,"status"?: Database["public"]['Enums']["machine_status"]
                   }
                   Relationships: [
                     
@@ -99,14 +99,14 @@ isOneToOne: false
                   ]
                 },"orders": {
                   Row: {
-                    "cashier_id": string,"code": string,"created_at": string,"customer_id": string | null,"customer_type": Database["public"]['Enums']["customer_type"],"id": string,"machine_id": string | null,"payment_method": Database["public"]['Enums']["payment_method"],"price_per_kg": number,"service_type": Database["public"]['Enums']["service_type"],"status": Database["public"]['Enums']["order_status"],"subtotal": number,"total": number,"updated_at": string,"weight_kg": number
+                    "cashier_id": string,"code": string,"created_at": string,"customer_id": string | null,"customer_type": Database["public"]['Enums']["customer_type"],"id": string,"machine_id": string | null,"payment_method": Database["public"]['Enums']["payment_method"],"price_per_kg": number,"service_type": Database["public"]['Enums']["service_type"],"shelf_bin_id": string | null,"shelf_note": string | null,"status": Database["public"]['Enums']["order_status"],"subtotal": number,"total": number,"updated_at": string,"weight_kg": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "cashier_id": string,"code": string,"created_at"?: string,"customer_id"?: string | null,"customer_type": Database["public"]['Enums']["customer_type"],"id"?: string,"machine_id"?: string | null,"payment_method": Database["public"]['Enums']["payment_method"],"price_per_kg": number,"service_type": Database["public"]['Enums']["service_type"],"status"?: Database["public"]['Enums']["order_status"],"subtotal": number,"total": number,"updated_at"?: string,"weight_kg": number
+                    "cashier_id": string,"code": string,"created_at"?: string,"customer_id"?: string | null,"customer_type": Database["public"]['Enums']["customer_type"],"id"?: string,"machine_id"?: string | null,"payment_method": Database["public"]['Enums']["payment_method"],"price_per_kg": number,"service_type": Database["public"]['Enums']["service_type"],"shelf_bin_id"?: string | null,"shelf_note"?: string | null,"status"?: Database["public"]['Enums']["order_status"],"subtotal": number,"total": number,"updated_at"?: string,"weight_kg": number
                   }
                   Update: {
-                    "cashier_id"?: string,"code"?: string,"created_at"?: string,"customer_id"?: string | null,"customer_type"?: Database["public"]['Enums']["customer_type"],"id"?: string,"machine_id"?: string | null,"payment_method"?: Database["public"]['Enums']["payment_method"],"price_per_kg"?: number,"service_type"?: Database["public"]['Enums']["service_type"],"status"?: Database["public"]['Enums']["order_status"],"subtotal"?: number,"total"?: number,"updated_at"?: string,"weight_kg"?: number
+                    "cashier_id"?: string,"code"?: string,"created_at"?: string,"customer_id"?: string | null,"customer_type"?: Database["public"]['Enums']["customer_type"],"id"?: string,"machine_id"?: string | null,"payment_method"?: Database["public"]['Enums']["payment_method"],"price_per_kg"?: number,"service_type"?: Database["public"]['Enums']["service_type"],"shelf_bin_id"?: string | null,"shelf_note"?: string | null,"status"?: Database["public"]['Enums']["order_status"],"subtotal"?: number,"total"?: number,"updated_at"?: string,"weight_kg"?: number
                   }
                   Relationships: [
                     {
@@ -170,7 +170,7 @@ isOneToOne: false
                   ]
                 },"order_details": {
                   Row: {
-                    "addons": Json | null,"cashier_id": string,"cashier_name": string | null,"code": string,"created_at": string,"customer_id": string | null,"customer_name": string | null,"customer_phone": string | null,"customer_type": Database["public"]['Enums']["customer_type"],"id": string,"machine_id": string | null,"machine_label": string | null,"payment_method": Database["public"]['Enums']["payment_method"],"price_per_kg": number,"service_type": Database["public"]['Enums']["service_type"],"status": Database["public"]['Enums']["order_status"],"subtotal": number,"total": number,"weight_kg": number
+                    "addons": Json | null,"cashier_id": string,"cashier_name": string | null,"code": string,"created_at": string,"customer_id": string | null,"customer_name": string | null,"customer_phone": string | null,"customer_type": Database["public"]['Enums']["customer_type"],"id": string,"machine_id": string | null,"machine_label": string | null,"payment_method": Database["public"]['Enums']["payment_method"],"price_per_kg": number,"service_type": Database["public"]['Enums']["service_type"],"shelf_bin_id": string | null,"shelf_location": string | null,"shelf_note": string | null,"status": Database["public"]['Enums']["order_status"],"subtotal": number,"total": number,"weight_kg": number
                   }
                   ComputedFields: never
                   Relationships: [
