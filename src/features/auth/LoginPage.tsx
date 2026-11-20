@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { Lock, ShieldAlert, User } from 'lucide-react'
-import { Button, ErrorNote, Input, MaterialSwitcher } from '@/shared/ui'
+import { Button, ErrorNote, Input } from '@/shared/ui'
 import { BrandMark } from '@/shared/layout/BrandMark'
 import { homePath } from './paths'
 import { useAuth } from './useAuth'
@@ -11,7 +11,7 @@ type Audience = 'staff' | 'admin'
 
 const copy: Record<Audience, { title: string; subtitle: string; demo: [string, string]; switchTo: string; switchLabel: string }> = {
   staff: {
-    title: 'Suds & Stats',
+    title: 'Laundry POS',
     subtitle: 'Sign in to continue',
     demo: ['cashier2', 'pass123'],
     switchTo: '/admin/login',
@@ -55,21 +55,12 @@ export function LoginPage({ audience = 'staff' }: { audience?: Audience }) {
   }
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden px-4">
-      {/* Liquid-glass blobs sit behind the card, so the glass has something to bend. */}
-      <div aria-hidden className="pointer-events-none absolute inset-0">
-        <span className="liquid liquid-morph absolute -top-20 -left-16 size-72 opacity-90 sm:size-96" />
-        <span className="liquid liquid-morph absolute -right-20 bottom-8 size-80 opacity-80 sm:size-[26rem]" style={{ animationDelay: '-7s' }} />
-        <span className="liquid liquid-morph absolute top-[16%] left-[62%] hidden size-24 opacity-90 md:block" style={{ animationDelay: '-3s' }} />
-      </div>
-      <div className="absolute top-4 right-4 z-10">
-        <MaterialSwitcher />
-      </div>
+    <main className="flex min-h-screen items-center justify-center px-4">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: 'spring', stiffness: 260, damping: 26 }}
-        className="relative z-10 w-full max-w-sm"
+        className="w-full max-w-sm"
       >
         <div className="mb-6 flex flex-col items-center text-center">
           <motion.div
@@ -79,20 +70,20 @@ export function LoginPage({ audience = 'staff' }: { audience?: Audience }) {
           >
             <BrandMark size="lg" tone={isAdminLogin ? 'dark' : 'blue'} />
           </motion.div>
-          <h1 className="mt-4 text-3xl font-semibold tracking-tight">{text.title}</h1>
+          <h1 className="mt-4 text-2xl font-medium">{text.title}</h1>
           <p className="text-sm text-slate-500">{text.subtitle}</p>
         </div>
 
         {profile ? (
           // Signed in, but as a cashier, on the admin entrance.
-          <div className="space-y-4 rounded-3xl border border-slate-200 bg-white p-7 text-center">
+          <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm">
             <ShieldAlert className="mx-auto size-8 text-amber-500" aria-hidden />
             <p className="text-sm text-slate-700">
               You are signed in as <strong>{profile.display_name}</strong>, a cashier. The admin panel is for admins only.
             </p>
             <Link
               to="/"
-              className="liquid-btn inline-flex h-10 w-full items-center justify-center rounded-full text-sm font-medium text-white"
+              className="inline-flex h-10 w-full items-center justify-center rounded-lg bg-blue-600 text-sm font-medium text-white hover:bg-blue-700"
             >
               Go to the POS
             </Link>
@@ -101,7 +92,7 @@ export function LoginPage({ audience = 'staff' }: { audience?: Audience }) {
             </Button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4 rounded-3xl border border-slate-200 bg-white p-7">
+          <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
             <Input
               label="Username"
               icon={<User />}

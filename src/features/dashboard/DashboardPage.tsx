@@ -74,7 +74,7 @@ export function DashboardPage() {
             to="/transaction"
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.97 }}
-            className="gloss inline-flex h-14 items-center gap-3 rounded-xl bg-blue-600/90 px-7 text-base font-medium text-white hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+            className="inline-flex h-14 items-center gap-3 rounded-xl bg-blue-600 px-7 text-base font-medium text-white shadow-md shadow-blue-600/25 hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
           >
             <Plus className="size-5" aria-hidden /> New transaction
           </MotionLink>
@@ -171,12 +171,12 @@ export function DashboardPage() {
             <h2 id="shelf-heading" className="mb-4 text-lg font-medium text-slate-900">
               Shelf map
             </h2>
-            <ShelfMap orders={board.active} onSelect={setShelving} />
+            <ShelfMap shelves={board.shelves} orders={board.active} onSelect={setShelving} />
           </section>
         </>
       )}
 
-      <ShelfModal key={shelving?.id ?? 'none'} order={shelving} orders={board?.active ?? []} onClose={() => setShelving(null)} onSave={setShelf} />
+      <ShelfModal key={shelving?.id ?? 'none'} order={shelving} shelves={board?.shelves ?? []} orders={board?.active ?? []} onClose={() => setShelving(null)} onSave={setShelf} />
       <StartWashingModal order={starting} machines={board?.machines ?? []} onClose={() => setStarting(null)} onConfirm={start} />
     </div>
   )

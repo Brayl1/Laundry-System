@@ -21,7 +21,7 @@ export function AdminShell() {
 
   useEffect(() => {
     const previous = document.title
-    document.title = 'Admin · Suds & Stats'
+    document.title = 'Admin · Laundry POS'
     return () => {
       document.title = previous
     }
@@ -49,11 +49,11 @@ export function AdminShell() {
         <AdminSidebar profile={profile} onLogout={signOut} />
       </aside>
 
-      <header className="sticky top-0 z-30 flex h-14 items-center gap-3 glass-bar border-b border-slate-200 px-4 lg:hidden print:hidden">
+      <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-slate-200 bg-white/90 px-4 backdrop-blur lg:hidden print:hidden">
         <button
           type="button"
           onClick={() => setDrawerOpen(true)}
-          className="rounded-md p-1.5 text-slate-700 hover:bg-white/60"
+          className="rounded-md p-1.5 text-slate-700 hover:bg-slate-100"
           aria-label="Open menu"
         >
           <Menu className="size-5" />
@@ -68,7 +68,7 @@ export function AdminShell() {
         {drawerOpen && (
           <div className="fixed inset-0 z-50 lg:hidden print:hidden">
             <motion.div
-              className="absolute inset-0 bg-slate-900/25 backdrop-blur-sm"
+              className="absolute inset-0 bg-slate-900/50"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -86,7 +86,7 @@ export function AdminShell() {
               <button
                 type="button"
                 onClick={() => setDrawerOpen(false)}
-                className="absolute top-4 -right-12 glass-strong rounded-full p-2 text-slate-700"
+                className="absolute top-4 -right-12 rounded-full bg-white p-2 text-slate-700 shadow-md"
                 aria-label="Close menu"
               >
                 <X className="size-4" />

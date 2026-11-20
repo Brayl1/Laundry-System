@@ -22,15 +22,15 @@ export function SelectCard({ selected, onSelect, icon, label, hint, group }: Sel
       whileHover={{ y: -2 }}
       whileTap={{ scale: 0.98 }}
       className={cn(
-        'relative flex min-h-24 flex-col items-center justify-center gap-2 rounded-2xl border px-4 py-5 text-sm transition-colors',
+        'relative flex min-h-24 flex-col items-center justify-center gap-2 rounded-xl border bg-white px-4 py-5 text-sm transition-colors',
         'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500',
-        selected ? 'neu-inset border-transparent' : 'neu-btn',
+        selected ? 'border-transparent bg-blue-50/70' : 'border-slate-200 hover:border-slate-300',
       )}
     >
       {selected && (
         <motion.span
           layoutId={`select-ring-${group}`}
-          className="pointer-events-none absolute inset-0 rounded-2xl border-2 border-blue-500"
+          className="pointer-events-none absolute inset-0 rounded-xl border-2 border-blue-500"
           transition={{ type: 'spring', stiffness: 450, damping: 35 }}
         />
       )}

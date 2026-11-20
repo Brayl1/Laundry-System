@@ -24,7 +24,7 @@ export function auditTone(e: Pick<AuditEntry, 'action' | 'entity' | 'summary' | 
   if (e.entity === 'orders') {
     if (e.action === 'create') return 'green'
     const changed = Object.keys(e.details ?? {})
-    const onlyStatusOrShelf = changed.length > 0 && changed.every((k) => k === 'status' || k === 'shelf_location')
+    const onlyStatusOrShelf = changed.length > 0 && changed.every((k) => k === 'status' || k === 'shelf_location' || k === 'shelf_bin_id' || k === 'shelf_note')
     return onlyStatusOrShelf ? 'blue' : 'red'
   }
   return e.action === 'update' ? 'red' : 'slate'

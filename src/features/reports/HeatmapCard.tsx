@@ -36,7 +36,7 @@ export function HeatmapCard({ heatmap }: { heatmap: Heatmap }) {
                     key={hour}
                     title={`${WEEKDAYS[day]} ${fullHour(hour)}: ${count} order${count === 1 ? '' : 's'}`}
                     className="size-6 rounded-md"
-                    style={{ backgroundColor: count === 0 ? 'rgb(120 140 180 / 0.10)' : `rgb(111 96 230 / ${0.18 + (count / heatmap.max) * 0.77})` }}
+                    style={{ backgroundColor: count === 0 ? 'rgb(148 163 184 / 0.18)' : `rgb(37 99 235 / ${0.18 + (count / heatmap.max) * 0.77})` }}
                   />
                 ))}
               </tr>
@@ -47,7 +47,7 @@ export function HeatmapCard({ heatmap }: { heatmap: Heatmap }) {
       <p className="mt-2 flex items-center gap-2 text-xs text-slate-500">
         Quiet
         {[0.18, 0.4, 0.6, 0.8, 0.95].map((a) => (
-          <span key={a} className="size-3.5 rounded" style={{ backgroundColor: `rgb(111 96 230 / ${a})` }} />
+          <span key={a} className="size-3.5 rounded" style={{ backgroundColor: `rgb(37 99 235 / ${a})` }} />
         ))}
         Busy
       </p>

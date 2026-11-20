@@ -36,8 +36,12 @@ export interface OrderDetail {
   paymentMethod: PaymentMethod
   status: OrderStatus
   machineLabel: string | null
-  /** Where the finished bag is stored, e.g. "Shelf 2, Bin B". */
+  /** Where the finished bag is stored as one readable line, e.g. "Shelf 2, Bin B · blue bag". Built by the database. */
   shelfLocation: string | null
+  /** The bin the bag is in (a row of shelf_bins), or null. */
+  shelfBinId: string | null
+  /** The free-text note kept with the bag, e.g. "blue bag". */
+  shelfNote: string | null
   cashierName: string
   addons: OrderLine[]
 }

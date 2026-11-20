@@ -2,7 +2,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { peso } from '@/lib/format'
 import type { DailyPoint } from './stats'
 
-const BAR = '#7a6cf0'
+const BAR = '#2563eb'
 const INK_MUTED = '#64748b'
 const GRID = '#e2e8f0'
 

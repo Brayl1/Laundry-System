@@ -18,6 +18,10 @@ describe('auditTone', () => {
     expect(auditTone({ ...base, details: { total: { from: 100, to: 10 } } })).toBe('red')
   })
 
+  it('treats putting a bag on a shelf as routine', () => {
+    expect(auditTone({ ...base, details: { shelf_bin_id: { from: null, to: 'bin-1' }, shelf_note: { from: null, to: 'blue bag' } } })).toBe('blue')
+  })
+
   it('colours settings and staff edits red', () => {
     expect(auditTone({ ...base, entity: 'settings' })).toBe('red')
   })

@@ -19,8 +19,8 @@ export function Stepper({ steps, current }: StepperProps) {
             <li className="flex w-14 shrink-0 flex-col items-center gap-1.5" aria-current={active ? 'step' : undefined}>
               <motion.span
                 animate={{
-                  backgroundColor: done ? '#16a34a' : active ? '#6f60e6' : '#e4e1f3',
-                  color: done || active ? '#ffffff' : '#6e6a8c',
+                  backgroundColor: done ? '#16a34a' : active ? '#2563eb' : '#e2e8f0',
+                  color: done || active ? '#ffffff' : '#64748b',
                   scale: active ? 1.08 : 1,
                 }}
                 transition={{ duration: 0.25 }}

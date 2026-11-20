@@ -3,7 +3,7 @@ import type { PaymentMethod } from '@/lib/types'
 import { paymentMethodLabel } from '@/lib/format'
 
 // Blue/amber passes the CVD separation check; the original blue/purple pair does not.
-const COLORS: Record<PaymentMethod, string> = { cash: '#6f60e6', qr: '#f472b6' }
+const COLORS: Record<PaymentMethod, string> = { cash: '#2563eb', qr: '#d97706' }
 const METHODS: PaymentMethod[] = ['cash', 'qr']
 
 export function PaymentPie({ counts }: { counts: Record<PaymentMethod, number> }) {

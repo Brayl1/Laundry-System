@@ -1,5 +1,6 @@
 import { supabase, unwrap } from '@/lib/supabase'
 import { mapOrderDetail } from '@/lib/orderDetail'
+import { fetchShelves, type Shelf } from '@/features/shelf'
 import type { Machine, OrderDetail, OrderStatus } from '@/lib/types'
 
 export interface Board {
@@ -8,16 +9,19 @@ export interface Board {
   /** Orders created since midnight, local time. */
   todayCount: number
   machines: Machine[]
+  /** The racks and bins from the shelves tables. */
+  shelves: Shelf[]
 }
 
 export async function fetchBoard(): Promise<Board> {
   const now = new Date()
   const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate())
 
-  const [active, today, machines] = await Promise.all([
+  const [active, today, machines, shelves] = await Promise.all([
     supabase.from('order_details').select('*').neq('status', 'claimed').order('created_at', { ascending: true }).limit(200),
     supabase.from('orders').select('id', { count: 'exact', head: true }).gte('created_at', midnight.toISOString()),
     supabase.from('machines').select('*').order('label'),
+    fetchShelves(),
   ])
   if (today.error) throw new Error(today.error.message)
 
@@ -25,6 +29,7 @@ export async function fetchBoard(): Promise<Board> {
     active: unwrap(active).map(mapOrderDetail),
     todayCount: today.count ?? 0,
     machines: unwrap(machines),
+    shelves,
   }
 }
 
@@ -40,12 +45,14 @@ export async function startOrder(orderId: string, machineId: string): Promise<vo
 
 let feedCount = 0
 
-/** Calls `onChange` when any order or machine changes, from any till. */
+/** Calls `onChange` when any order, machine or shelf changes, from any till. */
 export function subscribeToBoard(onChange: () => void): () => void {
   const channel = supabase
     .channel(`board-feed-${++feedCount}`)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, onChange)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'machines' }, onChange)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'shelves' }, onChange)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'shelf_bins' }, onChange)
     .subscribe()
   return () => {
     supabase.removeChannel(channel)

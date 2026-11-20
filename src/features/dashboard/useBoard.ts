@@ -43,10 +43,13 @@ export function useBoard() {
   )
 
   /** Stores where an order's bag is kept. Throws so the dialog can show the reason. */
-  const setShelf = useCallback(async (orderId: string, location: string | null) => {
-    await saveShelfLocation(orderId, location)
-    setBoard((prev) => prev && { ...prev, active: prev.active.map((o) => (o.id === orderId ? { ...o, shelfLocation: location } : o)) })
-  }, [])
+  const setShelf = useCallback(
+    async (orderId: string, binId: string | null, note: string | null) => {
+      await saveShelfLocation(orderId, binId, note)
+      refresh()
+    },
+    [refresh],
+  )
 
   /** Approves a pending order: the washer goes to "in use". Throws so the dialog can show the reason. */
   const start = useCallback(

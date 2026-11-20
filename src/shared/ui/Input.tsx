@@ -31,9 +31,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           id={inputId}
           aria-invalid={error ? true : undefined}
           className={cn(
-            'h-11 w-full rounded-2xl border border-transparent bg-slate-100 px-4 text-sm text-slate-900 placeholder:text-slate-400',
-            'transition-colors focus:border-blue-300 focus:bg-white focus:outline-none focus:ring-3 focus:ring-blue-200/70',
-            icon ? 'pl-10' : null,
+            'h-10 w-full rounded-lg border border-transparent bg-slate-100 px-3 text-sm text-slate-900 placeholder:text-slate-400',
+            'transition-colors focus:border-slate-300 focus:bg-white focus:outline-none focus:ring-3 focus:ring-slate-200',
+            icon ? 'pl-9' : null,
             error && 'border-red-400',
             className,
           )}

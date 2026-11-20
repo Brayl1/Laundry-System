@@ -15,7 +15,7 @@ interface AuditRow {
 export async function fetchAuditLog(limit = 200): Promise<AuditEntry[]> {
   const rows = unwrap(
     await db.from('audit_log').select('id, created_at, action, entity, summary, details, actor:profiles(display_name, role)').order('created_at', { ascending: false }).limit(limit),
-  ) as AuditRow[]
+  ) as unknown as AuditRow[]
   return rows.map((r) => ({
     id: r.id,
     createdAt: r.created_at,

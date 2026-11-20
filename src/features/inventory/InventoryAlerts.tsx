@@ -21,7 +21,7 @@ export function InventoryAlerts() {
   ]
 
   return (
-    <div role="alert" className="glass flex gap-3 rounded-xl border border-amber-300/60 p-4 text-sm text-amber-900">
+    <div role="alert" className="flex gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
       <AlertTriangle className="mt-0.5 size-5 shrink-0 text-amber-600" aria-hidden />
       <div className="min-w-0 flex-1">
         <p className="font-medium">Needs attention</p>

@@ -5,6 +5,7 @@ import { InventoryPage } from '@/features/inventory'
 import { LedgerPage } from '@/features/ledger'
 import { OngoingOrdersPage } from '@/features/orders'
 import { ReportsPage } from '@/features/reports'
+import { ShelvesPage } from '@/features/shelf'
 import { MachinesPage, PricingPage, ShopInfoPage } from '@/features/settings'
 import { StaffPage } from '@/features/staff'
 import { OverviewPage } from './OverviewPage'
@@ -20,6 +21,7 @@ export const adminRoutes: RouteObject[] = [
   { path: 'pricing', element: <PricingPage /> },
   { path: 'machines', element: <MachinesPage /> },
   { path: 'inventory', element: <InventoryPage /> },
+  { path: 'shelves', element: <ShelvesPage /> },
   { path: 'shop', element: <ShopInfoPage /> },
   { path: 'audit', element: <AuditPage /> },
 ]

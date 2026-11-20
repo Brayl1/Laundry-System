@@ -54,7 +54,7 @@ export function MachinePorthole({ status, label, className }: MachinePortholePro
   }[status]
 
   return (
-    <svg viewBox="0 0 100 100" className={cn('neu-dial size-24 rounded-full', className)} role="img" aria-label={`${label}, ${statusWord[status]}`}>
+    <svg viewBox="0 0 100 100" className={cn('size-24', className)} role="img" aria-label={`${label}, ${statusWord[status]}`}>
       <defs>
         <clipPath id={clipId}>
           <circle cx="50" cy="50" r="36" />
@@ -79,7 +79,7 @@ export function MachinePorthole({ status, label, className }: MachinePortholePro
             <g transform="translate(-50 46)">
               <motion.path
                 d={WAVE}
-                className="fill-sky-400/70"
+                className="fill-blue-400/70"
                 animate={{ x: [0, -50] }}
                 transition={{ duration: 1.8, ease: 'linear', repeat: Infinity }}
               />

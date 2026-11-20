@@ -30,7 +30,7 @@ export function Modal({ open, onClose, title, children, footer, className }: Mod
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          <div className="modal-backdrop absolute inset-0 bg-slate-900/25 backdrop-blur-sm" onClick={onClose} aria-hidden />
+          <div className="modal-backdrop absolute inset-0 bg-slate-900/50" onClick={onClose} aria-hidden />
           <motion.div
             role="dialog"
             aria-modal="true"
@@ -39,7 +39,7 @@ export function Modal({ open, onClose, title, children, footer, className }: Mod
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 8 }}
             transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-            className={cn('glass-strong relative w-full max-w-sm rounded-3xl border border-slate-200 p-5', className)}
+            className={cn('relative w-full max-w-sm rounded-xl bg-white p-5 shadow-xl', className)}
           >
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-base font-semibold">{title}</h2>

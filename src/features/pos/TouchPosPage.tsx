@@ -106,7 +106,7 @@ export function TouchPosPage() {
   if (done) {
     return (
       <div className="mx-auto max-w-md space-y-5 text-center">
-        <div className="glass-strong rounded-2xl border border-slate-200 p-8">
+        <div className="rounded-xl border border-slate-200 bg-white shadow-sm p-8">
           <span className="mx-auto flex size-16 items-center justify-center rounded-full bg-green-600 text-white">
             <Check className="size-8" aria-hidden />
           </span>
@@ -143,7 +143,7 @@ export function TouchPosPage() {
           />
         </section>
 
-        <section aria-label="Weight" className="glass-strong rounded-2xl border border-slate-200 p-4">
+        <section aria-label="Weight" className="rounded-xl border border-slate-200 bg-white shadow-sm p-4">
           <div className="mb-3 flex items-end justify-between">
             <p className="text-sm font-medium text-slate-700">Weight</p>
             <p className="text-4xl font-semibold tabular-nums">
@@ -190,7 +190,7 @@ export function TouchPosPage() {
                   aria-pressed={on}
                   onClick={() => setAddonIds((ids) => (on ? ids.filter((i) => i !== a.id) : [...ids, a.id]))}
                   className={cn(
-                    'flex min-h-20 flex-col items-start justify-center rounded-2xl border-2 px-4 py-3 text-left transition-colors active:scale-[0.98]',
+                    'flex min-h-20 flex-col items-start justify-center rounded-xl border-2 px-4 py-3 text-left transition-colors active:scale-[0.98]',
                     on ? 'border-blue-600 bg-blue-50' : 'border-slate-200 bg-white',
                   )}
                 >
@@ -203,7 +203,7 @@ export function TouchPosPage() {
         )}
       </div>
 
-      <aside className="glass-strong h-fit space-y-4 rounded-2xl border border-slate-200 p-4 lg:sticky lg:top-24" aria-label="Order summary">
+      <aside className="h-fit space-y-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm lg:sticky lg:top-24" aria-label="Order summary">
         <div>
           <p className="mb-1.5 text-sm font-medium text-slate-700">Customer</p>
           {customer ? (
@@ -294,7 +294,7 @@ function Tile({ selected, onClick, icon, title, hint }: { selected: boolean; onC
       aria-pressed={selected}
       onClick={onClick}
       className={cn(
-        'flex min-h-32 flex-col items-center justify-center gap-2 rounded-2xl border-2 px-4 py-6 text-center transition-colors active:scale-[0.98]',
+        'flex min-h-32 flex-col items-center justify-center gap-2 rounded-xl border-2 px-4 py-6 text-center transition-colors active:scale-[0.98]',
         'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500',
         selected ? 'border-blue-600 bg-blue-50' : 'border-slate-200 bg-white hover:border-slate-300',
       )}

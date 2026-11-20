@@ -11,7 +11,10 @@ import { createSupply, deleteSupply, fetchInventory, markServiced, restockSupply
 export function InventoryPage() {
   const inventory = useLoad(fetchInventory)
   const { saving, error, run } = useSaveState()
-  const act = (action: () => Promise<void>) => run(action).then((ok) => ok && inventory.reload())
+  const act = (action: () => Promise<void>) =>
+    run(action).then((ok) => {
+      if (ok) inventory.reload()
+    })
 
   return (
     <div>
@@ -33,7 +36,14 @@ export function InventoryPage() {
                 ))}
               </ul>
             )}
-            <AddSupplyForm busy={saving} onAdd={(input) => run(() => createSupply(input)).then((ok) => ok && inventory.reload())} />
+            <AddSupplyForm
+              busy={saving}
+              onAdd={(input) =>
+                run(() => createSupply(input)).then((ok) => {
+                  if (ok) inventory.reload()
+                })
+              }
+            />
           </Card>
 
           <Card title="Machine maintenance">
@@ -70,7 +80,7 @@ function SupplyRow({ supply: s, busy, onRestock, onDelete }: { supply: Supply; b
           {Math.round(s.stock).toLocaleString()} {s.unit}
         </p>
       </div>
-      <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-200/60" role="img" aria-label={`${Math.round((s.stock / target) * 100)}% of the comfortable level`}>
+      <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-200" role="img" aria-label={`${Math.round((s.stock / target) * 100)}% of the comfortable level`}>
         <div className={cn('h-full rounded-full', low ? 'bg-red-500' : 'bg-blue-500')} style={{ width: `${Math.min((s.stock / target) * 100, 100)}%` }} />
       </div>
       <p className="mt-1.5 text-xs text-slate-500">
@@ -149,7 +159,7 @@ function MachineRow({ machine: m, busy, onServiced, onInterval }: { machine: Mac
         <p className="font-medium text-slate-900">{m.label}</p>
         {due ? <Badge tone="red">Service due</Badge> : soon ? <Badge tone="yellow">Service soon</Badge> : <Badge tone="green">OK</Badge>}
       </div>
-      <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-200/60" role="img" aria-label={`${m.loads_since_service} of ${m.service_every} loads`}>
+      <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-200" role="img" aria-label={`${m.loads_since_service} of ${m.service_every} loads`}>
         <div className={cn('h-full rounded-full', due ? 'bg-red-500' : soon ? 'bg-amber-500' : 'bg-green-500')} style={{ width: `${pct}%` }} />
       </div>
       <p className="mt-1.5 text-xs text-slate-500">

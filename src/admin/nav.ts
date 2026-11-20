@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
-import { BarChart3, Boxes, ClipboardList, LayoutDashboard, ScrollText, Store, Tag, UserCog, Users, Wallet, WashingMachine } from 'lucide-react'
+import { Archive, BarChart3, Boxes, ClipboardList, LayoutDashboard, ScrollText, Store, Tag, UserCog, Users, Wallet, WashingMachine } from 'lucide-react'
 
 export interface NavItem {
   to: string
@@ -32,6 +32,7 @@ export const navSections: NavSection[] = [
       { to: '/admin/pricing', label: 'Pricing & Add-ons', icon: Tag },
       { to: '/admin/machines', label: 'Machines', icon: WashingMachine },
       { to: '/admin/inventory', label: 'Inventory', icon: Boxes },
+      { to: '/admin/shelves', label: 'Shelves', icon: Archive },
       { to: '/admin/shop', label: 'Shop Info', icon: Store },
     ],
   },

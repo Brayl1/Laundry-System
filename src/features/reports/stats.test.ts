@@ -19,6 +19,8 @@ function order(overrides: Partial<OrderDetail>): OrderDetail {
     status: 'pending',
     machineLabel: null,
     shelfLocation: null,
+    shelfBinId: null,
+    shelfNote: null,
     cashierName: 'LenLen',
     addons: [],
     ...overrides,

@@ -1,43 +1,34 @@
 import type { OrderDetail } from '@/lib/types'
 
-/** The shop's physical racks, top to bottom. Edit these two lists to match the real shelves. */
-export const SHELF_ROWS = ['Shelf 1', 'Shelf 2', 'Shelf 3', 'Shelf 4'] as const
-export const SHELF_BINS = ['A', 'B', 'C', 'D'] as const
-
-/** Free-text detail after the bin, e.g. "Shelf 2, Bin B · blue bag". */
-export const NOTE_SEPARATOR = ' · '
-
-export const binLabel = (row: string, bin: string) => `${row}, Bin ${bin}`
-
-export const ALL_BINS: string[] = SHELF_ROWS.flatMap((row) => SHELF_BINS.map((bin) => binLabel(row, bin)))
-
-export interface ParsedLocation {
-  /** One of ALL_BINS, or null when the text is only a note (or the shelves were renamed). */
-  bin: string | null
-  note: string
+/** A bin on a rack. Rows of the `shelf_bins` table. */
+export interface Bin {
+  id: string
+  name: string
 }
 
-export function parseLocation(value: string | null): ParsedLocation {
-  if (!value) return { bin: null, note: '' }
-  const [head, ...rest] = value.split(NOTE_SEPARATOR)
-  if (ALL_BINS.includes(head)) return { bin: head, note: rest.join(NOTE_SEPARATOR) }
-  return { bin: null, note: value }
+/** A rack and its bins, in display order. Rows of the `shelves` table. */
+export interface Shelf {
+  id: string
+  name: string
+  bins: Bin[]
 }
 
-/** The string stored on the order, or null to clear it. */
-export function formatLocation(bin: string | null, note: string): string | null {
-  const cleanNote = note.trim()
-  if (bin && cleanNote) return `${bin}${NOTE_SEPARATOR}${cleanNote}`
-  return bin ?? (cleanNote || null)
-}
+/** Longest note the shelf dialog accepts (the table allows a little more). */
+export const NOTE_MAX = 40
 
-/** Which active order holds each bin. Pass `exceptId` to ignore the order being edited. */
+export const binLabel = (shelf: string, bin: string) => `${shelf}, Bin ${bin}`
+
+/** Which active order holds each bin, keyed by bin id. Pass `exceptId` to ignore the order being edited. */
 export function occupiedBins(orders: OrderDetail[], exceptId?: string): Map<string, OrderDetail> {
   const map = new Map<string, OrderDetail>()
   for (const o of orders) {
-    if (o.id === exceptId || o.status === 'claimed') continue
-    const { bin } = parseLocation(o.shelfLocation)
-    if (bin) map.set(bin, o)
+    if (o.id === exceptId || o.status === 'claimed' || !o.shelfBinId) continue
+    map.set(o.shelfBinId, o)
   }
   return map
+}
+
+/** How many bins the widest rack has, so every row of the map lines up. */
+export function widestShelf(shelves: Shelf[]): number {
+  return Math.max(1, ...shelves.map((s) => s.bins.length))
 }
