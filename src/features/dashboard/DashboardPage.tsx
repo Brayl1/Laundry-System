@@ -4,11 +4,14 @@ import { motion } from 'motion/react'
 import { ArrowRight, LayoutGrid, Plus } from 'lucide-react'
 import { useAuth } from '@/features/auth'
 import { notifyReady } from '@/features/notifications'
+import { PaymentModal, recordPayment } from '@/features/payments'
 import { ShelfMap, ShelfModal } from '@/features/shelf'
-import type { OrderDetail, OrderStatus } from '@/lib/types'
+import { orderBalance } from '@/lib/orderDetail'
+import type { OrderDetail, OrderStatus, PaymentMethod } from '@/lib/types'
 import { AnimatedNumber, Button, Card, ErrorNote, MachinePorthole, PageLoader } from '@/shared/ui'
 import { useClock } from '@/shared/hooks/useClock'
 import { cn } from '@/shared/cn'
+import { DryerModal } from './DryerModal'
 import { resolveMove } from './kanban'
 import { QueueBoard } from './QueueBoard'
 import { StartWashingModal } from './StartWashingModal'
@@ -25,8 +28,10 @@ function greeting(hour: number): string {
 
 export function DashboardPage() {
   const { profile } = useAuth()
-  const { board, error, advance, start, setShelf } = useBoard()
+  const { board, error, advance, start, dry, setShelf, refresh } = useBoard()
   const [starting, setStarting] = useState<OrderDetail | null>(null)
+  const [drying, setDrying] = useState<OrderDetail | null>(null)
+  const [paying, setPaying] = useState<{ order: OrderDetail; atPickup: boolean } | null>(null)
   const [shelving, setShelving] = useState<OrderDetail | null>(null)
   const [moveNote, setMoveNote] = useState<string | null>(null)
   const clock = useClock(30_000)
@@ -36,6 +41,11 @@ export function DashboardPage() {
   async function handleAdvance(id: string, status: OrderStatus) {
     setMoveNote(null)
     const order = board?.active.find((o) => o.id === id)
+    // No release without payment (BR21): collect what is owed, including the storage charge, before handing over.
+    if (status === 'claimed' && order && orderBalance(order) > 0) {
+      setPaying({ order, atPickup: true })
+      return
+    }
     const ok = await advance(id, status)
     if (ok && status === 'done' && order) void notifyReady(order)
   }
@@ -45,7 +55,16 @@ export function DashboardPage() {
     const move = resolveMove(order.status, to)
     setMoveNote(move.kind === 'reject' ? move.reason : null)
     if (move.kind === 'start') setStarting(order)
+    else if (move.kind === 'dry') setDrying(order)
     else if (move.kind === 'advance') void handleAdvance(order.id, move.to)
+  }
+
+  /** Saves a payment; at pickup, the order is handed over once nothing is left to pay. */
+  async function savePayment(order: OrderDetail, amount: number, method: PaymentMethod, referenceNo: string) {
+    await recordPayment({ orderId: order.id, amount, method, referenceNo })
+    const atPickup = paying?.atPickup ?? false
+    refresh()
+    if (atPickup && orderBalance(order) - amount <= 0.004) await advance(order.id, 'claimed')
   }
 
   const firstName = profile?.display_name.split(' ')[0] ?? ''
@@ -143,6 +162,25 @@ export function DashboardPage() {
             )}
           </section>
 
+          {board.dryers.length > 0 && (
+            <section aria-labelledby="dryers-heading">
+              <h2 id="dryers-heading" className="mb-4 text-lg font-medium text-slate-900">
+                Dryers
+              </h2>
+              <ul className="grid grid-cols-[repeat(auto-fill,minmax(9.5rem,1fr))] gap-3">
+                {board.dryers.map((d) => (
+                  <li key={d.id} className="flex flex-col items-center rounded-xl border border-slate-200 bg-white px-3 py-4 text-center shadow-sm">
+                    <MachinePorthole status={d.status} label={d.label} />
+                    <p className="mt-2 font-medium text-slate-900">{d.label}</p>
+                    <p className={cn('text-sm', d.status === 'idle' ? 'text-green-600' : d.status === 'maintenance' ? 'text-amber-600' : 'text-blue-600')}>
+                      {d.status === 'idle' ? 'Free' : d.status === 'maintenance' ? 'Out of service' : 'Drying'}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
           <section aria-labelledby="queue-heading">
             <div className="mb-4 flex items-center justify-between">
               <h2 id="queue-heading" className="text-lg font-medium text-slate-900">
@@ -163,7 +201,16 @@ export function DashboardPage() {
                 <p className="mt-1 text-sm text-slate-500">New orders show up here as soon as they are created.</p>
               </Card>
             ) : (
-              <QueueBoard orders={board.active} now={now} onAdvance={handleAdvance} onStart={setStarting} onShelf={setShelving} onMove={handleMove} />
+              <QueueBoard
+                orders={board.active}
+                now={now}
+                onAdvance={handleAdvance}
+                onStart={setStarting}
+                onDry={setDrying}
+                onPay={(order) => setPaying({ order, atPickup: false })}
+                onShelf={setShelving}
+                onMove={handleMove}
+              />
             )}
           </section>
 
@@ -177,6 +224,18 @@ export function DashboardPage() {
       )}
 
       <ShelfModal key={shelving?.id ?? 'none'} order={shelving} shelves={board?.shelves ?? []} orders={board?.active ?? []} onClose={() => setShelving(null)} onSave={setShelf} />
+      <DryerModal key={drying?.id ?? 'no-dryer'} order={drying} dryers={board?.dryers ?? []} onClose={() => setDrying(null)} onConfirm={dry} />
+      <PaymentModal
+        key={paying?.order.id ?? 'no-payment'}
+        order={paying?.order ?? null}
+        atPickup={paying?.atPickup ?? false}
+        onClose={() => setPaying(null)}
+        onPay={savePayment}
+        onReleaseUnpaid={(order) => {
+          setPaying(null)
+          void advance(order.id, 'claimed')
+        }}
+      />
       <StartWashingModal order={starting} machines={board?.machines ?? []} onClose={() => setStarting(null)} onConfirm={start} />
     </div>
   )

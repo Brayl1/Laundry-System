@@ -5,7 +5,7 @@ import { cn } from '@/shared/cn'
 import { resolveMove } from './kanban'
 import { DRAG_MIME, OrderTicket } from './OrderTicket'
 
-type Stage = 'pending' | 'washing' | 'done'
+type Stage = 'pending' | 'washing' | 'drying' | 'done'
 
 interface Column {
   stage: OrderStatus
@@ -17,6 +17,7 @@ interface Column {
 const columns: Column[] = [
   { stage: 'pending', title: 'Pending', empty: 'No orders waiting to start', dot: 'bg-amber-400' },
   { stage: 'washing', title: 'Washing', empty: 'Nothing in the wash', dot: 'bg-blue-500' },
+  { stage: 'drying', title: 'Drying', empty: 'Nothing in the dryers', dot: 'bg-violet-500' },
   { stage: 'done', title: 'Ready for pickup', empty: 'No orders waiting for pickup', dot: 'bg-green-500' },
   { stage: 'claimed', title: 'Claimed', empty: 'Drop an order here when it is handed over', dot: 'bg-slate-400' },
 ]
@@ -26,16 +27,18 @@ interface QueueBoardProps {
   now: number
   onAdvance: (id: string, status: OrderStatus) => void
   onStart: (order: OrderDetail) => void
+  onDry: (order: OrderDetail) => void
+  onPay: (order: OrderDetail) => void
   onShelf: (order: OrderDetail) => void
   /** A card was dropped on another column. The page decides what that means (see resolveMove). */
   onMove: (order: OrderDetail, to: OrderStatus) => void
 }
 
 /**
- * Pending, washing, ready and claimed columns. Drag a card to the next column to advance it;
+ * Pending, washing, drying, ready and claimed columns. Drag a card to the next column to advance it;
  * the buttons on each card do the same for touch screens and keyboard users.
  */
-export function QueueBoard({ orders, now, onAdvance, onStart, onShelf, onMove }: QueueBoardProps) {
+export function QueueBoard({ orders, now, onAdvance, onStart, onDry, onPay, onShelf, onMove }: QueueBoardProps) {
   const [dragId, setDragId] = useState<string | null>(null)
   const [overStage, setOverStage] = useState<OrderStatus | null>(null)
   const dragged = orders.find((o) => o.id === dragId) ?? null
@@ -62,7 +65,7 @@ export function QueueBoard({ orders, now, onAdvance, onStart, onShelf, onMove }:
 
   return (
     <LayoutGroup>
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
         {columns.map(({ stage, title, empty, dot }) => {
           const tickets = orders.filter((o): o is OrderDetail & { status: Stage } => o.status === stage)
           const verdict = dragged && overStage === stage ? resolveMove(dragged.status, stage).kind : null
@@ -96,6 +99,8 @@ export function QueueBoard({ orders, now, onAdvance, onStart, onShelf, onMove }:
                       now={now}
                       onAdvance={onAdvance}
                       onStart={onStart}
+                      onDry={onDry}
+                      onPay={onPay}
                       onShelf={onShelf}
                       isDragging={dragId === o.id}
                       onDragStart={setDragId}

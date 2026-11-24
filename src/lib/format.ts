@@ -51,6 +51,7 @@ export const paymentMethodLabel: Record<PaymentMethod, string> = {
 export const orderStatusLabel: Record<OrderStatus, string> = {
   pending: 'Pending',
   washing: 'Washing',
+  drying: 'Drying',
   done: 'Done',
   claimed: 'Claimed',
 }

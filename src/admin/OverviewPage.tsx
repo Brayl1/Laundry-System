@@ -11,6 +11,7 @@ import { useOverview } from './useOverview'
 const statusTone: Record<OrderStatus, BadgeTone> = {
   pending: 'yellow',
   washing: 'blue',
+  drying: 'blue',
   done: 'green',
   claimed: 'slate',
 }

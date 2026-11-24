@@ -20,6 +20,7 @@ export type AuditTone = 'red' | 'green' | 'amber' | 'blue' | 'slate'
  */
 export function auditTone(e: Pick<AuditEntry, 'action' | 'entity' | 'summary' | 'details'>): AuditTone {
   if (e.action === 'delete') return 'red'
+  if (e.entity === 'order_payments') return 'green'
   if (e.entity === 'ledger_entries') return e.summary.startsWith('Recorded payment') ? 'green' : 'amber'
   if (e.entity === 'orders') {
     if (e.action === 'create') return 'green'

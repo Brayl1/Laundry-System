@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { OrderStatus } from '@/lib/types'
 import { saveShelfLocation } from '@/features/shelf'
-import { fetchBoard, startOrder, subscribeToBoard, updateOrderStatus, type Board } from './api'
+import { fetchBoard, startDrying, startOrder, subscribeToBoard, updateOrderStatus, type Board } from './api'
 
 export function useBoard() {
   const [board, setBoard] = useState<Board | null>(null)
@@ -60,5 +60,14 @@ export function useBoard() {
     [refresh],
   )
 
-  return { board, error, advance, start, setShelf }
+  /** Moves a washing order to drying, with the dryer if one was chosen. Throws so the dialog can show the reason. */
+  const dry = useCallback(
+    async (orderId: string, machineId: string | null) => {
+      await startDrying(orderId, machineId)
+      refresh()
+    },
+    [refresh],
+  )
+
+  return { board, error, advance, start, dry, setShelf, refresh }
 }

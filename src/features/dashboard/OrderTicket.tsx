@@ -1,7 +1,8 @@
 import { motion } from 'motion/react'
-import { Archive, GripVertical, WashingMachine } from 'lucide-react'
+import { Archive, GripVertical, WashingMachine, Wallet } from 'lucide-react'
 import type { OrderDetail, OrderStatus } from '@/lib/types'
 import { customerTypeLabel, peso, serviceTypeLabel, timeAgo } from '@/lib/format'
+import { orderBalance } from '@/lib/orderDetail'
 import { Button, type ButtonProps } from '@/shared/ui'
 import { cn } from '@/shared/cn'
 
@@ -10,13 +11,15 @@ type Stage = Exclude<OrderStatus, 'claimed'>
 /** What the single button on a ticket does at each stage. */
 const nextStep: Record<Stage, { to: OrderStatus; label: string; variant: NonNullable<ButtonProps['variant']> }> = {
   pending: { to: 'washing', label: 'Start washing', variant: 'blue' },
-  washing: { to: 'done', label: 'Mark done', variant: 'success' },
+  washing: { to: 'drying', label: 'Move to drying', variant: 'blue' },
+  drying: { to: 'done', label: 'Mark ready', variant: 'success' },
   done: { to: 'claimed', label: 'Handed over', variant: 'primary' },
 }
 
 const accent: Record<Stage, string> = {
   pending: 'border-l-amber-400',
   washing: 'border-l-blue-500',
+  drying: 'border-l-violet-500',
   done: 'border-l-green-500',
 }
 
@@ -26,6 +29,10 @@ interface OrderTicketProps {
   onAdvance: (id: string, status: OrderStatus) => void
   /** Pending orders are started through an approval dialog instead of a plain status change. */
   onStart: (order: OrderDetail) => void
+  /** Washing orders move to drying through the dryer dialog. */
+  onDry: (order: OrderDetail) => void
+  /** Opens the payment dialog (storage charge or any unpaid balance). */
+  onPay: (order: OrderDetail) => void
   onShelf: (order: OrderDetail) => void
   /** Drag and drop. The buttons stay as the fallback for touch screens and keyboards. */
   isDragging: boolean
@@ -35,8 +42,9 @@ interface OrderTicketProps {
 
 export const DRAG_MIME = 'application/x-laundry-order'
 
-export function OrderTicket({ order: o, now, onAdvance, onStart, onShelf, isDragging, onDragStart, onDragEnd }: OrderTicketProps) {
+export function OrderTicket({ order: o, now, onAdvance, onStart, onDry, onPay, onShelf, isDragging, onDragStart, onDragEnd }: OrderTicketProps) {
   const step = nextStep[o.status]
+  const balance = orderBalance(o)
   return (
     <motion.li
       layout
@@ -86,11 +94,21 @@ export function OrderTicket({ order: o, now, onAdvance, onStart, onShelf, isDrag
           <span className="text-xs text-slate-500">{timeAgo(o.createdAt, now)}</span>
         </div>
 
+        {o.storageCharge > 0 && (
+          <p className="mt-2 inline-flex items-center rounded-md bg-amber-50 px-2 py-1 text-xs font-medium text-amber-800">Storage charge {peso(o.storageCharge)}</p>
+        )}
+
         {o.shelfLocation && (
           <p className="mt-2 inline-flex max-w-full items-center gap-1 rounded-md bg-blue-50 px-2 py-1 text-xs text-blue-800">
             <Archive className="size-3.5 shrink-0" aria-hidden />
             <span className="truncate">{o.shelfLocation}</span>
           </p>
+        )}
+
+        {balance > 0 && (
+          <Button className="mt-3" size="sm" variant="outline" fullWidth icon={<Wallet className="size-3.5" />} onClick={() => onPay(o)}>
+            Record payment · {peso(balance)} due
+          </Button>
         )}
 
         <div className={cn('mt-3 grid gap-2', o.status === 'done' ? 'grid-cols-[auto_1fr]' : 'grid-cols-1')}>
@@ -99,7 +117,7 @@ export function OrderTicket({ order: o, now, onAdvance, onStart, onShelf, isDrag
               {o.shelfLocation ? 'Move' : 'Shelf'}
             </Button>
           )}
-          <Button size="sm" fullWidth variant={step.variant} onClick={() => (o.status === 'pending' ? onStart(o) : onAdvance(o.id, step.to))}>
+          <Button size="sm" fullWidth variant={step.variant} onClick={() => (o.status === 'pending' ? onStart(o) : o.status === 'washing' ? onDry(o) : onAdvance(o.id, step.to))}>
             {step.label}
           </Button>
         </div>

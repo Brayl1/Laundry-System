@@ -23,7 +23,14 @@ export function mapOrderDetail(row: OrderDetailRow): OrderDetail {
     shelfLocation: row.shelf_location,
     shelfBinId: row.shelf_bin_id,
     shelfNote: row.shelf_note,
+    storageCharge: Number(row.storage_charge ?? 0),
+    amountPaid: Number(row.amount_paid ?? 0),
     cashierName: row.cashier_name ?? 'Unknown',
     addons: ((row.addons ?? []) as unknown as OrderLine[]).map((a) => ({ name: a.name, price: Number(a.price) })),
   }
+}
+
+/** What is still owed on an order: its price plus the storage charge, minus every payment (BR20). Never below zero. */
+export function orderBalance(o: Pick<OrderDetail, 'total' | 'storageCharge' | 'amountPaid'>): number {
+  return Math.max(Math.round((o.total + o.storageCharge - o.amountPaid) * 100) / 100, 0)
 }

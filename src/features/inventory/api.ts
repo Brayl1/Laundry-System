@@ -1,5 +1,6 @@
 import { supabase, unwrap } from '@/lib/supabase'
 import { db } from '@/lib/untyped'
+import { localDateKey } from '@/lib/format'
 import type { Machine } from '@/lib/types'
 import type { Supply } from './alerts'
 
@@ -55,10 +56,9 @@ export async function createSupply(s: SupplyInput): Promise<void> {
   if (error) throw new Error(error.message)
 }
 
-/** Adds to the stock the database currently holds, so a deduction that just happened is not overwritten. */
+/** Saves a delivery as a RESTOCK movement. A trigger adds it to the stock on hand, so the stock always equals the sum of its movements. */
 export async function restockSupply(id: string, amount: number): Promise<void> {
-  const row = unwrap(await db.from('supplies').select('stock').eq('id', id).single()) as { stock: number | string }
-  const { error } = await db.from('supplies').update({ stock: Number(row.stock) + amount }).eq('id', id)
+  const { error } = await db.from('stock_movements').insert({ supply_id: id, movement_type: 'restock', quantity: amount })
   if (error) throw new Error(error.message)
 }
 
@@ -80,7 +80,7 @@ export async function deleteSupply(id: string): Promise<void> {
 
 /** The technician came: start counting loads again. */
 export async function markServiced(machineId: string): Promise<void> {
-  unwrap(await supabase.from('machines').update({ loads_since_service: 0 }).eq('id', machineId).select('id').single())
+  unwrap(await supabase.from('machines').update({ loads_since_service: 0, last_serviced_date: localDateKey(new Date()) }).eq('id', machineId).select('id').single())
 }
 
 export async function setServiceInterval(machineId: string, loads: number): Promise<void> {

@@ -6,6 +6,7 @@ import { orderStatusLabel } from '@/lib/format'
 const tones: Record<OrderStatus, { bg: string; fg: string }> = {
   pending: { bg: '#fef3c7', fg: '#92400e' },
   washing: { bg: '#dbeafe', fg: '#1e40af' },
+  drying: { bg: '#ede9fe', fg: '#6d28d9' },
   done: { bg: '#dcfce7', fg: '#166534' },
   claimed: { bg: '#f1f5f9', fg: '#475569' },
 }

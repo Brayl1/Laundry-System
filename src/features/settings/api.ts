@@ -40,8 +40,8 @@ export async function fetchMachines(): Promise<Machine[]> {
   return unwrap(await supabase.from('machines').select('*').order('label'))
 }
 
-export async function createMachine(label: string): Promise<void> {
-  const res = await supabase.from('machines').insert({ label: label.trim() }).select('id').single()
+export async function createMachine(label: string, machineType: 'washer' | 'dryer' = 'washer'): Promise<void> {
+  const res = await supabase.from('machines').insert({ label: label.trim(), machine_type: machineType }).select('id').single()
   if (res.error?.code === '23505') throw new Error('A machine with that label already exists')
   unwrap(res)
 }

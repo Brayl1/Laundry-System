@@ -17,7 +17,8 @@ export async function fetchPricing(): Promise<PricingData> {
   return {
     pricePerKg: Number(unwrap(settings).price_per_kg),
     addons: unwrap(addons).map((a) => ({ ...a, price: Number(a.price) })),
-    machines: unwrap(machines),
+    // Dryers are recorded later, when an order moves to drying. Only washers can be reserved at the counter.
+    machines: unwrap(machines).filter((m) => m.machine_type !== 'dryer'),
   }
 }
 

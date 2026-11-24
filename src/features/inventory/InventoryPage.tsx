@@ -163,7 +163,7 @@ function MachineRow({ machine: m, busy, onServiced, onInterval }: { machine: Mac
         <div className={cn('h-full rounded-full', due ? 'bg-red-500' : soon ? 'bg-amber-500' : 'bg-green-500')} style={{ width: `${pct}%` }} />
       </div>
       <p className="mt-1.5 text-xs text-slate-500">
-        {m.loads_since_service} of {m.service_every} loads{!due && `, ${loadsLeft(m)} to go`}
+        {m.loads_since_service} of {m.service_every} loads{!due && `, ${loadsLeft(m)} to go`}{m.last_serviced_date && `, last serviced ${m.last_serviced_date}`}
       </p>
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <Button size="sm" variant={due ? 'danger' : 'outline'} icon={<Wrench className="size-3.5" />} disabled={busy} onClick={onServiced}>

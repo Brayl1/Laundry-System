@@ -6,7 +6,7 @@ import { formatDateTime } from '@/lib/format'
 import { cn } from '@/shared/cn'
 import { PageLoader } from '@/shared/ui'
 
-type TrackStatus = 'pending' | 'washing' | 'done' | 'claimed'
+type TrackStatus = 'pending' | 'washing' | 'drying' | 'done' | 'claimed'
 
 interface Tracked {
   code: string
@@ -19,6 +19,7 @@ interface Tracked {
 const stages: { status: TrackStatus; title: string; text: string }[] = [
   { status: 'pending', title: 'Received', text: 'We have your laundry and it is in the queue.' },
   { status: 'washing', title: 'Washing', text: 'Your laundry is being washed.' },
+  { status: 'drying', title: 'Drying', text: 'Your laundry is in the dryer.' },
   { status: 'done', title: 'Ready for pickup', text: 'Come by any time during opening hours.' },
   { status: 'claimed', title: 'Picked up', text: 'Thank you for choosing us!' },
 ]

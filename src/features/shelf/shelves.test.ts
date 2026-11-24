@@ -18,6 +18,8 @@ const order = (id: string, shelfBinId: string | null, status: OrderDetail['statu
   status,
   machineLabel: null,
   shelfLocation: null,
+  storageCharge: 0,
+  amountPaid: 0,
   shelfBinId,
   shelfNote: null,
   cashierName: 'Test',

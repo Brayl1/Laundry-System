@@ -21,13 +21,14 @@ interface MachinesManagerProps {
 
 export function MachinesManager({ machines, editable, onChanged }: MachinesManagerProps) {
   const [label, setLabel] = useState('')
+  const [machineType, setMachineType] = useState<'washer' | 'dryer'>('washer')
   const { saving, error, run } = useSaveState()
 
   const act = (action: () => Promise<void>) => run(action).then((ok) => ok && onChanged())
 
   async function handleAdd(e: FormEvent) {
     e.preventDefault()
-    const ok = await run(() => createMachine(label))
+    const ok = await run(() => createMachine(label, machineType))
     if (ok) {
       setLabel('')
       onChanged()
@@ -48,7 +49,10 @@ export function MachinesManager({ machines, editable, onChanged }: MachinesManag
               className="flex items-center gap-3 rounded-lg border border-slate-200 px-3 py-2"
             >
               <WashingMachine className="size-5 text-slate-500" aria-hidden />
-              <span className="flex-1 text-sm">{m.label}</span>
+              <span className="flex-1 text-sm">
+                {m.label}
+                {m.machine_type === 'dryer' && <span className="ml-2 text-xs text-slate-500">dryer</span>}
+              </span>
               {editable ? (
                 <select
                   value={m.status}
@@ -80,8 +84,17 @@ export function MachinesManager({ machines, editable, onChanged }: MachinesManag
         </AnimatePresence>
       </ul>
       {editable && (
-        <form onSubmit={handleAdd} className="mt-4 grid grid-cols-[1fr_auto] items-end gap-2">
-          <Input label="New machine" placeholder="e.g. Washer 5" value={label} onChange={(e) => setLabel(e.target.value)} required />
+        <form onSubmit={handleAdd} className="mt-4 grid grid-cols-[1fr_auto_auto] items-end gap-2">
+          <Input label="New machine" placeholder={machineType === 'dryer' ? 'e.g. Dryer 1' : 'e.g. Washer 5'} value={label} onChange={(e) => setLabel(e.target.value)} required />
+          <select
+            value={machineType}
+            onChange={(e) => setMachineType(e.target.value as 'washer' | 'dryer')}
+            aria-label="Machine type"
+            className="h-10 rounded-lg bg-slate-100 px-3 text-sm focus:outline-none"
+          >
+            <option value="washer">Washer</option>
+            <option value="dryer">Dryer</option>
+          </select>
           <Button type="submit" variant="outline" icon={<Plus className="size-4" />} loading={saving} aria-label="Add machine" />
         </form>
       )}

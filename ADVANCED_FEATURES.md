@@ -84,3 +84,22 @@ Inter for text, and three button styles used consistently:
 
 Colours are the standard Tailwind blue and slate scales, so there is nothing to override. Ctrl+K (Cmd+K on a Mac) still
 opens the command palette to jump to any page.
+
+## Revision: the instructor's questions (paper vs. app)
+
+Two migrations (`20261104000000_drying_status.sql`, `20261104100000_paper_alignment.sql`, built on top of the shelf-map
+migration) and the matching screens. Run `npm run db:reset` to apply them locally.
+
+| Question / paper rule | In the app |
+|---|---|
+| Storage charge grows every day: who updates it, and when? (BR16, BR20) | `orders.ready_at`, `claimed_at`, `storage_fee`; function `storage_fee_for` (2 free days, then PHP 10 per day). While an order is Ready the charge is **calculated** (`order_details.storage_charge`); a trigger **saves it once** when the order becomes Claimed. Amber chip on the ticket, extra lines on the receipt. |
+| Orders can have zero, one or many payments (BR18, BR19) | table `order_payments`. A new order starts with one payment of its price (trigger). **Record payment** button on any ticket with a balance opens a dialog (amount, cash or GCash/QR, GCash reference). |
+| No release without payment (BR21) | **Handed over** on an order with a balance opens the payment dialog first (price + storage charge - paid). It records the payment and hands the order over, or the cashier can choose **Hand over without paying** (the balance stays on the order). |
+| No stored total (BR3, BR20) | the table keeps `wash_amount` (weight x rate) and `subtotal` (price incl. add-ons, saved once). There is no `total` column; `order_details.total` is calculated and the amount due adds the storage charge (view `order_balances`). |
+| MACHINE includes dryers: how are the washer and the dryer recorded? (BR24) | `machines.machine_type` (washer or dryer, set when an admin adds a machine) and table `order_machine_uses`. A WASH row is added when washing starts; **Move to drying** opens a dryer dialog and function `start_drying` records the DRY row. |
+| Drying stage (BR4) | new status `drying`: Pending, Washing, **Drying**, Ready, Claimed. New Drying column on the board, Dryers row on the dashboard, Drying step on the customer tracking page. |
+| Nothing reduces stock or records restocks (BR25) | table `stock_movements`. Starting a wash saves a USAGE movement per supply; Restock on the Inventory page saves a RESTOCK movement; a trigger keeps `supplies.stock` equal to the sum. |
+| Audit log: separate table or built-in logging? (BR30) | `audit_log` is its own table filled by triggers; payments are logged too. |
+
+Notes: dryers are kept apart from washers (they never appear where a washer is chosen). The Reports cash/GCash totals still count
+the price paid at the counter; later payments such as the storage charge are in `order_payments`.

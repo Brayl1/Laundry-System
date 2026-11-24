@@ -44,6 +44,12 @@ export function Receipt({ order, shop }: { order: OrderDetail; shop: ShopInfo })
       ))}
       <Divider />
       <Row label="TOTAL:" value={peso(order.total)} strong />
+      {order.storageCharge > 0 && (
+        <>
+          <Row label="Storage charge:" value={peso(order.storageCharge)} />
+          <Row label="AMOUNT DUE:" value={peso(order.total + order.storageCharge)} strong />
+        </>
+      )}
       <Row label="Payment:" value={paymentMethodLabel[order.paymentMethod]} />
       <Divider thick />
       <div className="text-center">

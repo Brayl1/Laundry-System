@@ -10,14 +10,19 @@ describe('resolveMove', () => {
     expect(resolveMove('pending', 'washing')).toEqual({ kind: 'start' })
   })
 
+  it('routes washing to drying through the dryer choice', () => {
+    expect(resolveMove('washing', 'drying')).toEqual({ kind: 'dry' })
+  })
+
   it('advances one step at a time', () => {
-    expect(resolveMove('washing', 'done')).toEqual({ kind: 'advance', to: 'done' })
+    expect(resolveMove('drying', 'done')).toEqual({ kind: 'advance', to: 'done' })
     expect(resolveMove('done', 'claimed')).toEqual({ kind: 'advance', to: 'claimed' })
   })
 
   it('rejects skipping a stage or moving backwards', () => {
     expect(resolveMove('pending', 'done').kind).toBe('reject')
-    expect(resolveMove('washing', 'claimed').kind).toBe('reject')
-    expect(resolveMove('done', 'washing').kind).toBe('reject')
+    expect(resolveMove('washing', 'done').kind).toBe('reject')
+    expect(resolveMove('drying', 'claimed').kind).toBe('reject')
+    expect(resolveMove('done', 'drying').kind).toBe('reject')
   })
 })

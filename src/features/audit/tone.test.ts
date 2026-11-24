@@ -22,6 +22,10 @@ describe('auditTone', () => {
     expect(auditTone({ ...base, details: { shelf_bin_id: { from: null, to: 'bin-1' }, shelf_note: { from: null, to: 'blue bag' } } })).toBe('blue')
   })
 
+  it('colours a recorded payment green', () => {
+    expect(auditTone({ ...base, action: 'create', entity: 'order_payments', summary: 'Recorded payment of PHP 90.00' })).toBe('green')
+  })
+
   it('colours settings and staff edits red', () => {
     expect(auditTone({ ...base, entity: 'settings' })).toBe('red')
   })

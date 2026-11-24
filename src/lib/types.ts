@@ -42,8 +42,12 @@ export interface OrderDetail {
   shelfBinId: string | null
   /** The free-text note kept with the bag, e.g. "blue bag". */
   shelfNote: string | null
+  /** Storage charge so far: calculated while Ready, the saved final amount once Claimed. */
+  storageCharge: number
+  /** Everything paid so far on this order (the sum of its payments). */
+  amountPaid: number
   cashierName: string
   addons: OrderLine[]
 }
 
-export const ORDER_STATUSES: OrderStatus[] = ['pending', 'washing', 'done', 'claimed']
+export const ORDER_STATUSES: OrderStatus[] = ['pending', 'washing', 'drying', 'done', 'claimed']

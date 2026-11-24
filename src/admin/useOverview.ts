@@ -27,7 +27,7 @@ export function useOverview() {
         setOverview({
           week,
           today: { income: todayPoint?.income ?? 0, orders: todayPoint?.orders ?? 0 },
-          active: latest.filter((o) => o.status === 'pending' || o.status === 'washing'),
+          active: latest.filter((o) => o.status === 'pending' || o.status === 'washing' || o.status === 'drying'),
           recent: latest.slice(0, 6),
           machines,
         })
