@@ -1,4 +1,4 @@
-# Laundry Shop
+,# Laundry Shop
 
 A point-of-sale and shop-management web app for a laundry shop. Cashiers take orders and run the washers from a
 live dashboard. Admins manage staff, prices, stock and reports from a separate admin panel.
@@ -182,3 +182,11 @@ dashboard, which composes other features.
 - The anon key is public by design. The `service_role` key must never be placed in the app or in Vercel's
   `VITE_` variables.
 - `.env.local` is ignored by git. Do not commit it.
+
+## Role
+Brylle Palao - Developer
+Stefe Kira Albarece - Team Lead
+Pepito Sia - Database
+Trisha Mae Poligrates - Documentation and Testing
+Antonette Serato - Interview and Requirements
+
